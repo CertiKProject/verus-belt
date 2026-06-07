@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["axiom_structural_obeys_concrete_eq","group_laws_eq","lemma_option_obeys_concrete_eq","lemma_option_obeys_deep_eq","lemma_option_obeys_eq_spec","lemma_option_obeys_view_eq","obeys_concrete_eq","obeys_deep_eq","obeys_eq_spec","obeys_eq_spec_properties","obeys_view_eq"]};

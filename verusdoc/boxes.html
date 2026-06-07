@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>boxes</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library boxes</h1>
+
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+This is an extension of the Iris "boxes" library.
+See the Iris appendix for an introduction to what boxes are: https://plv.mpi-sws.org/iris/appendix-4.3.pdf
+
+<div class="paragraph"> </div>
+
+All the standard Box logical rules are unmodified. The only difference is that this version
+of the boxes library now provides additional guard properties.
+
+<div class="paragraph"> </div>
+
+The model of boxes is almost exactly the same, except we need to use the
+Leaf-style invariants (<span class="inlinecode"><span class="id" title="var">True</span></span> <span class="inlinecode">&amp;&amp;{↑<span class="id" title="var">N</span>}&amp;&amp;&gt;</span> <span class="inlinecode">▷</span> <span class="inlinecode"><span class="id" title="var">Q</span></span>) instead of normal Iris invariants (<span class="inlinecode"><span class="id" title="var">inv</span></span> <span class="inlinecode"><span class="id" title="var">N</span></span> <span class="inlinecode"><span class="id" title="var">Q</span></span>).
+However, all the public-facing rules are the same.
+
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The CMRAs we need. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">boxG</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">local</span>] <span class="id" title="var">boxG_inG</span> :: <span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> (<span class="id" title="var">prodR</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">excl_authR</span> <span class="id" title="var">boolO</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">optionR</span> (<span class="id" title="var">agreeR</span> (<span class="id" title="var">laterO</span> (<span class="id" title="var">iPropO</span> <span class="id" title="var">Σ</span>))))).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">boxΣ</span> : <span class="id" title="var">gFunctors</span> := #[ <span class="id" title="var">GFunctor</span> (<span class="id" title="var">excl_authR</span> <span class="id" title="var">boolO</span> ×<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">optionRF</span> (<span class="id" title="var">agreeRF</span> (▶ ∙)) ) ].<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">subG_boxΣ</span> <span class="id" title="var">Σ</span> : <span class="id" title="var">subG</span> <span class="id" title="var">boxΣ</span> <span class="id" title="var">Σ</span> → <span class="id" title="var">boxG</span> <span class="id" title="var">Σ</span>.<br/>
+ 
+<br/>
+</div>
+
+<div class="doc">
+Standard boxes interface 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">box_defs</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">invGS_gen</span> <span class="id" title="var">hlc</span> <span class="id" title="var">Σ</span>, !<span class="id" title="var">boxG</span> <span class="id" title="var">Σ</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">namespace</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">slice_name</span> := <span class="id" title="var">gname</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">box_own_auth</span> (<span class="id" title="var">γ</span> : <span class="id" title="var">slice_name</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">excl_authR</span> <span class="id" title="var">boolO</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">own</span> <span class="id" title="var">γ</span> (<span class="id" title="var">a</span>, <span class="id" title="var">None</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">box_own_prop</span> (<span class="id" title="var">γ</span> : <span class="id" title="var">slice_name</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">own</span> <span class="id" title="var">γ</span> (<span class="id" title="var">ε</span>, <span class="id" title="var">Some</span> (<span class="id" title="var">to_agree</span> (<span class="id" title="keyword">Next</span> <span class="id" title="var">P</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">slice_inv</span> (<span class="id" title="var">γ</span> : <span class="id" title="var">slice_name</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">b</span>, <span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (●<span class="id" title="var">E</span> <span class="id" title="var">b</span>) ∗ <span class="id" title="keyword">if</span> <span class="id" title="var">b</span> <span class="id" title="keyword">then</span> <span class="id" title="var">P</span> <span class="id" title="keyword">else</span> <span class="id" title="var">True</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">slice</span> (<span class="id" title="var">γ</span> : <span class="id" title="var">slice_name</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">box_own_prop</span> <span class="id" title="var">γ</span> <span class="id" title="var">P</span> ∗ (<span class="id" title="var">True</span> &amp;&amp;{↑<span class="id" title="var">N</span>}&amp;&amp;&gt; ▷ (<span class="id" title="var">slice_inv</span> <span class="id" title="var">γ</span> <span class="id" title="var">P</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">box</span> (<span class="id" title="var">f</span> : <span class="id" title="var">gmap</span> <span class="id" title="var">slice_name</span> <span class="id" title="var">bool</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">tc_opaque</span> (∃ <span class="id" title="var">Φ</span> : <span class="id" title="var">slice_name</span> → <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▷ (<span class="id" title="var">P</span> ≡ [∗ <span class="id" title="var">map</span>] <span class="id" title="var">γ</span> ↦ <span class="id" title="var">_</span> ∈ <span class="id" title="var">f</span>, <span class="id" title="var">Φ</span> <span class="id" title="var">γ</span>) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[∗ <span class="id" title="var">map</span>] <span class="id" title="var">γ</span> ↦ <span class="id" title="var">b</span> ∈ <span class="id" title="var">f</span>, <span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (◯<span class="id" title="var">E</span> <span class="id" title="var">b</span>) ∗ <span class="id" title="var">box_own_prop</span> <span class="id" title="var">γ</span> (<span class="id" title="var">Φ</span> <span class="id" title="var">γ</span>) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">True</span> &amp;&amp;{↑<span class="id" title="var">N</span>}&amp;&amp;&gt; ▷ (<span class="id" title="var">slice_inv</span> <span class="id" title="var">γ</span> (<span class="id" title="var">Φ</span> <span class="id" title="var">γ</span>))))%<span class="id" title="var">I</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">box_defs</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span>: <span class="id" title="var">Params</span> (@<span class="id" title="var">box_own_prop</span>) 3 := {}.<br/>
+<span class="id" title="keyword">Global Instance</span>: <span class="id" title="var">Params</span> (@<span class="id" title="var">slice_inv</span>) 3 := {}.<br/>
+<span class="id" title="keyword">Global Instance</span>: <span class="id" title="var">Params</span> (@<span class="id" title="var">slice</span>) 5 := {}.<br/>
+<span class="id" title="keyword">Global Instance</span>: <span class="id" title="var">Params</span> (@<span class="id" title="var">box</span>) 5 := {}.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">box</span>.<br/>
+<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">invGS_gen</span> <span class="id" title="var">hlc</span> <span class="id" title="var">Σ</span>, !<span class="id" title="var">boxG</span> <span class="id" title="var">Σ</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">namespace</span>).<br/>
+<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">box_own_prop_ne</span> <span class="id" title="var">γ</span> : <span class="id" title="var">NonExpansive</span> (<span class="id" title="var">box_own_prop</span> <span class="id" title="var">γ</span>).<br/>
+ <span class="id" title="keyword">Global Instance</span> <span class="id" title="var">box_own_prop_contractive</span> <span class="id" title="var">γ</span> : <span class="id" title="var">Contractive</span> (<span class="id" title="var">box_own_prop</span> <span class="id" title="var">γ</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">box_inv_ne</span> <span class="id" title="var">γ</span> : <span class="id" title="var">NonExpansive</span> (<span class="id" title="var">slice_inv</span> <span class="id" title="var">γ</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">slice_ne</span> <span class="id" title="var">γ</span> : <span class="id" title="var">NonExpansive</span> (<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span>).<br/>
+ <span class="id" title="keyword">Global Instance</span> <span class="id" title="var">slice_contractive</span> <span class="id" title="var">γ</span> : <span class="id" title="var">Contractive</span> (<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span>).<br/>
+ <span class="id" title="keyword">Global Instance</span> <span class="id" title="var">slice_proper</span> <span class="id" title="var">γ</span> : <span class="id" title="var">Proper</span> ((≡) ==&gt; (≡)) (<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">slice_persistent</span> <span class="id" title="var">γ</span> <span class="id" title="var">P</span> : <span class="id" title="var">Persistent</span> (<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">P</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">box_contractive</span> <span class="id" title="var">f</span> : <span class="id" title="var">Contractive</span> (<span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span>).<br/>
+ <span class="id" title="keyword">Global Instance</span> <span class="id" title="var">box_ne</span> <span class="id" title="var">f</span> : <span class="id" title="var">NonExpansive</span> (<span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span>).<br/>
+ <span class="id" title="keyword">Global Instance</span> <span class="id" title="var">box_proper</span> <span class="id" title="var">f</span> : <span class="id" title="var">Proper</span> ((≡) ==&gt; (≡)) (<span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">box_own_auth_agree</span> <span class="id" title="var">γ</span> <span class="id" title="var">b1</span> <span class="id" title="var">b2</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (●<span class="id" title="var">E</span> <span class="id" title="var">b1</span>) ∗ <span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (◯<span class="id" title="var">E</span> <span class="id" title="var">b2</span>) ⊢ ⌜<span class="id" title="var">b1</span> = <span class="id" title="var">b2</span>⌝.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">box_own_auth_update</span> <span class="id" title="var">γ</span> <span class="id" title="var">b1</span> <span class="id" title="var">b2</span> <span class="id" title="var">b3</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (●<span class="id" title="var">E</span> <span class="id" title="var">b1</span>) ∗ <span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (◯<span class="id" title="var">E</span> <span class="id" title="var">b2</span>)<br/>
+&nbsp;&nbsp;==∗ <span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (●<span class="id" title="var">E</span> <span class="id" title="var">b3</span>) ∗ <span class="id" title="var">box_own_auth</span> <span class="id" title="var">γ</span> (◯<span class="id" title="var">E</span> <span class="id" title="var">b3</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">box_own_agree</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q1</span> <span class="id" title="var">Q2</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">box_own_prop</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q1</span> ∗ <span class="id" title="var">box_own_prop</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q2</span> ⊢ ▷ (<span class="id" title="var">Q1</span> ≡ <span class="id" title="var">Q2</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">box_alloc</span> : ⊢ <span class="id" title="var">box</span> <span class="id" title="var">N</span> ∅ <span class="id" title="var">True</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_insert_empty</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">Q</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ∃ <span class="id" title="var">γ</span>, ⌜<span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">None</span>⌝ ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> ∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (&lt;[<span class="id" title="var">γ</span>:=<span class="id" title="var">false</span>]&gt; <span class="id" title="var">f</span>) (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_delete_empty</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">γ</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">false</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ∃ <span class="id" title="var">P'</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;▷?<span class="id" title="var">q</span> (▷ (<span class="id" title="var">P</span> ≡ (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">P'</span>)) ∗ <span class="id" title="var">box</span> <span class="id" title="var">N</span> (<span class="id" title="var">delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">f</span>) <span class="id" title="var">P'</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_fill</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">γ</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">false</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> -∗ ▷ <span class="id" title="var">Q</span> -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (&lt;[<span class="id" title="var">γ</span>:=<span class="id" title="var">true</span>]&gt; <span class="id" title="var">f</span>) <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_empty</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">γ</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">true</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ▷ <span class="id" title="var">Q</span> ∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (&lt;[<span class="id" title="var">γ</span>:=<span class="id" title="var">false</span>]&gt; <span class="id" title="var">f</span>) <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_insert_full</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;▷ <span class="id" title="var">Q</span> -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ∃ <span class="id" title="var">γ</span>, ⌜<span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">None</span>⌝ ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> ∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (&lt;[<span class="id" title="var">γ</span>:=<span class="id" title="var">true</span>]&gt; <span class="id" title="var">f</span>) (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_delete_full</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">γ</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">true</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗<br/>
+&nbsp;&nbsp;∃ <span class="id" title="var">P'</span>, ▷ <span class="id" title="var">Q</span> ∗ ▷?<span class="id" title="var">q</span> ▷ (<span class="id" title="var">P</span> ≡ (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">P'</span>)) ∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (<span class="id" title="var">delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">f</span>) <span class="id" title="var">P'</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">box_fill</span> <span class="id" title="var">E</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> -∗ ▷ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ <span class="id" title="var">box</span> <span class="id" title="var">N</span> (<span class="id" title="var">const</span> <span class="id" title="var">true</span> &lt;$&gt; <span class="id" title="var">f</span>) <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">box_empty</span> <span class="id" title="var">E</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">map_Forall</span> (<span class="id" title="var">λ</span> <span class="id" title="var">_</span>, (<span class="id" title="var">true</span> =.)) <span class="id" title="var">f</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ▷ <span class="id" title="var">P</span> ∗ <span class="id" title="var">box</span> <span class="id" title="var">N</span> (<span class="id" title="var">const</span> <span class="id" title="var">false</span> &lt;$&gt; <span class="id" title="var">f</span>) <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_iff</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">Q'</span> <span class="id" title="var">γ</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> → <span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;▷ □ (<span class="id" title="var">Q</span> ↔ <span class="id" title="var">Q'</span>) -∗ <span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ∃ <span class="id" title="var">γ'</span> <span class="id" title="var">P'</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⌜<span class="id" title="var">delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">f</span> !! <span class="id" title="var">γ'</span> = <span class="id" title="var">None</span>⌝ ∗ ▷?<span class="id" title="var">q</span> ▷ □ (<span class="id" title="var">P</span> ↔ <span class="id" title="var">P'</span>) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ'</span> <span class="id" title="var">Q'</span> ∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (&lt;[<span class="id" title="var">γ'</span> := <span class="id" title="var">b</span>]&gt;(<span class="id" title="var">delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">f</span>)) <span class="id" title="var">P'</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_split</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q1</span> <span class="id" title="var">Q2</span> <span class="id" title="var">γ</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> → <span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> (<span class="id" title="var">Q1</span> ∗ <span class="id" title="var">Q2</span>) -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ∃ <span class="id" title="var">γ1</span> <span class="id" title="var">γ2</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⌜<span class="id" title="var">delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">f</span> !! <span class="id" title="var">γ1</span> = <span class="id" title="var">None</span>⌝ ∗ ⌜<span class="id" title="var">delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">f</span> !! <span class="id" title="var">γ2</span> = <span class="id" title="var">None</span>⌝ ∗ ⌜<span class="id" title="var">γ1</span> ≠ <span class="id" title="var">γ2</span>⌝ ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ1</span> <span class="id" title="var">Q1</span> ∗ <span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ2</span> <span class="id" title="var">Q2</span> ∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (&lt;[<span class="id" title="var">γ2</span> := <span class="id" title="var">b</span>]&gt;(&lt;[<span class="id" title="var">γ1</span> := <span class="id" title="var">b</span>]&gt;(<span class="id" title="var">delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">f</span>))) <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_combine</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q1</span> <span class="id" title="var">Q2</span> <span class="id" title="var">γ1</span> <span class="id" title="var">γ2</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> → <span class="id" title="var">γ1</span> ≠ <span class="id" title="var">γ2</span> → <span class="id" title="var">f</span> !! <span class="id" title="var">γ1</span> = <span class="id" title="var">Some</span> <span class="id" title="var">b</span> → <span class="id" title="var">f</span> !! <span class="id" title="var">γ2</span> = <span class="id" title="var">Some</span> <span class="id" title="var">b</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ1</span> <span class="id" title="var">Q1</span> -∗ <span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ2</span> <span class="id" title="var">Q2</span> -∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ ∃ <span class="id" title="var">γ</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⌜<span class="id" title="var">delete</span> <span class="id" title="var">γ2</span> (<span class="id" title="var">delete</span> <span class="id" title="var">γ1</span> <span class="id" title="var">f</span>) !! <span class="id" title="var">γ</span> = <span class="id" title="var">None</span>⌝ ∗ <span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> (<span class="id" title="var">Q1</span> ∗ <span class="id" title="var">Q2</span>) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (&lt;[<span class="id" title="var">γ</span> := <span class="id" title="var">b</span>]&gt;(<span class="id" title="var">delete</span> <span class="id" title="var">γ2</span> (<span class="id" title="var">delete</span> <span class="id" title="var">γ1</span> <span class="id" title="var">f</span>))) <span class="id" title="var">P</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+New Leaf-specific rules 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">box_guard</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">γ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">true</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span> ⊢ <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> &amp;&amp;{↑<span class="id" title="var">N</span>}&amp;&amp;&gt; ▷ <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_empty_many</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> (<span class="id" title="var">Qs</span> : <span class="id" title="var">gmap</span> <span class="id" title="var">gname</span> (<span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)) :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;(∀ <span class="id" title="var">γ</span> <span class="id" title="var">Q</span>, <span class="id" title="var">Qs</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">Q</span> → <span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">true</span>) →<br/>
+&nbsp;&nbsp;(∀ <span class="id" title="var">γ</span> <span class="id" title="var">Q</span>, ⌜<span class="id" title="var">Qs</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">Q</span>⌝ -∗ <span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗<br/>
+&nbsp;&nbsp;▷ ([∗ <span class="id" title="var">map</span>] <span class="id" title="var">γ</span> ↦ <span class="id" title="var">Q</span> ∈ <span class="id" title="var">Qs</span> , <span class="id" title="var">Q</span>) ∗ ▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (((<span class="id" title="var">λ</span> <span class="id" title="var">_</span>, <span class="id" title="var">false</span>) &lt;$&gt; <span class="id" title="var">Qs</span>) ∪ <span class="id" title="var">f</span>) <span class="id" title="var">P</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">slice_fill_many</span> <span class="id" title="var">E</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> (<span class="id" title="var">Qs</span> : <span class="id" title="var">gmap</span> <span class="id" title="var">gname</span> (<span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)) :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">N</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;(∀ <span class="id" title="var">γ</span> <span class="id" title="var">Q</span>, <span class="id" title="var">Qs</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">Q</span> → <span class="id" title="var">f</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">false</span>) →<br/>
+&nbsp;&nbsp;(∀ <span class="id" title="var">γ</span> <span class="id" title="var">Q</span>, ⌜<span class="id" title="var">Qs</span> !! <span class="id" title="var">γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">Q</span>⌝ -∗ <span class="id" title="var">slice</span> <span class="id" title="var">N</span> <span class="id" title="var">γ</span> <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;▷ ([∗ <span class="id" title="var">map</span>] <span class="id" title="var">γ</span> ↦ <span class="id" title="var">Q</span> ∈ <span class="id" title="var">Qs</span> , <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗<br/>
+&nbsp;&nbsp;▷?<span class="id" title="var">q</span> <span class="id" title="var">box</span> <span class="id" title="var">N</span> (((<span class="id" title="var">λ</span> <span class="id" title="var">_</span>, <span class="id" title="var">true</span>) &lt;$&gt; <span class="id" title="var">Qs</span>) ∪ <span class="id" title="var">f</span>) <span class="id" title="var">P</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">box</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Typeclasses Opaque</span> <span class="id" title="var">slice</span> <span class="id" title="var">box</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

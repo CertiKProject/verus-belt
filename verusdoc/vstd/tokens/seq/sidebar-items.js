@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["seq_to_map"],"struct":["GhostSeqAuth","GhostSubseq"]};

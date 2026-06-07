@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["_verus_external_fn_specification_959__60__32_f32_32_as_32_Clone_32__62__32__58__58__32_clone","_verus_external_fn_specification_960__60__32_f64_32_as_32_Clone_32__62__32__58__58__32_clone","float_cast_spec","ieee_float_cast"],"trait":["ExIeeeFloatCast","FloatBitsProperties"]};

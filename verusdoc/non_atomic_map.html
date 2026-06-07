@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>non_atomic_map</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library non_atomic_map</h1>
+
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+Non-atomic map. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <span class="id" title="var">ReadWriteState</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" title="var">Reading</span> : <span class="id" title="var">nat</span> → <span class="id" title="var">ReadWriteState</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">Writing</span> : <span class="id" title="var">ReadWriteState</span><br/>
+.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">na_logicG</span> <span class="id" title="var">L</span> <span class="id" title="var">V</span> `{!<span class="id" title="var">EqDecision</span> <span class="id" title="var">L</span>, !<span class="id" title="var">Countable</span> <span class="id" title="var">L</span>} <span class="id" title="var">Σ</span> := {<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">local</span>] <span class="id" title="var">na1_inG</span> :: <span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> (<span class="id" title="var">gmap_viewR</span> <span class="id" title="var">L</span> (<span class="id" title="var">agreeR</span> (<span class="id" title="var">leibnizO</span> (<span class="id" title="var">V</span> × <span class="id" title="var">ReadWriteState'</span>)))) ;<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">local</span>] <span class="id" title="var">na2_inG</span> :: <span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> (<span class="id" title="var">gmap_viewR</span> (<span class="id" title="var">L</span> × <span class="id" title="var">nat</span>) (<span class="id" title="var">agreeR</span> (<span class="id" title="var">laterO</span> (<span class="id" title="var">iPropO</span> <span class="id" title="var">Σ</span>))))<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">na_logicΣ</span> <span class="id" title="var">L</span> <span class="id" title="var">V</span> `{!<span class="id" title="var">EqDecision</span> <span class="id" title="var">L</span>, !<span class="id" title="var">Countable</span> <span class="id" title="var">L</span>} : <span class="id" title="var">gFunctors</span> := #[<br/>
+&nbsp;&nbsp;<span class="id" title="var">GFunctor</span> (<span class="id" title="var">gmap_viewR</span> <span class="id" title="var">L</span> (<span class="id" title="var">agreeR</span> (<span class="id" title="var">leibnizO</span> (<span class="id" title="var">V</span> × <span class="id" title="var">ReadWriteState'</span>)))) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">GFunctor</span> (<span class="id" title="var">gmap_viewRF</span> (<span class="id" title="var">L</span> × <span class="id" title="var">nat</span>) (<span class="id" title="var">agreeRF</span> (<span class="id" title="var">laterOF</span> <span class="id" title="var">idOF</span>)))<br/>
+].<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">subG_na_logicΣ</span> <span class="id" title="var">L</span> <span class="id" title="var">V</span> `{!<span class="id" title="var">EqDecision</span> <span class="id" title="var">L</span>, !<span class="id" title="var">Countable</span> <span class="id" title="var">L</span>} <span class="id" title="var">Σ</span> : <span class="id" title="var">subG</span> (<span class="id" title="var">na_logicΣ</span> <span class="id" title="var">L</span> <span class="id" title="var">V</span>) <span class="id" title="var">Σ</span> → <span class="id" title="var">na_logicG</span> <span class="id" title="var">L</span> <span class="id" title="var">V</span> <span class="id" title="var">Σ</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">NonAtomicMap</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">EqDecision</span> <span class="id" title="var">L</span>, !<span class="id" title="var">Countable</span> <span class="id" title="var">L</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">V</span>: <span class="id" title="keyword">Type</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">na_logicG</span> <span class="id" title="var">L</span> <span class="id" title="var">V</span> <span class="id" title="var">Σ</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">invGS_gen</span> <span class="id" title="var">hlc</span> <span class="id" title="var">Σ</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (<span class="id" title="var">γ</span>: <span class="id" title="var">gname</span>) (<span class="id" title="var">l</span>: <span class="id" title="var">L</span>) (<span class="id" title="var">v</span>: <span class="id" title="var">V</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (<span class="id" title="var">G</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Types</span> (σ: <span class="id" title="var">gmap</span> <span class="id" title="var">L</span> (<span class="id" title="var">V</span> × <span class="id" title="var">ReadWriteState</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">points_to</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;l ↦[ γ ] v" := (<span class="id" title="var">points_to</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 20, <span class="id" title="var">format</span> "l  ↦[ γ ]  v") : <span class="id" title="var">bi_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">points_to_w_intermediate</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">points_to_r_intermediate</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> <span class="id" title="var">G</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">points_to_timeless</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> : <span class="id" title="var">Timeless</span> (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">non_atomic_map_alloc_empty</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ |==&gt; ∃ <span class="id" title="var">γ</span>, <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> ∅.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">points_to_heap_agree</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>) ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ⊢ ⌜ ∃ <span class="id" title="var">n</span>, σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> <span class="id" title="var">n</span>) ⌝.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">points_to_heap_agree_w</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">points_to_w_intermediate</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ⊢ ⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Writing</span>) ⌝.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">points_to_heap_reading0</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⊢ (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>) ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>) ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ∗ ⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> 0) ⌝.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">na_write_begin</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⊢ (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>) ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> 0) ⌝<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">points_to_w_intermediate</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> (&lt;[ <span class="id" title="var">l</span> := (<span class="id" title="var">v</span>, <span class="id" title="var">Writing</span>) ]&gt; σ).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">na_write_finish</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> <span class="id" title="var">v'</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⊢ <span class="id" title="var">points_to_w_intermediate</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Writing</span>) ⌝<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> (&lt;[ <span class="id" title="var">l</span> := (<span class="id" title="var">v'</span>, <span class="id" title="var">Reading</span> 0) ]&gt; σ).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">na_read_begin</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ <span class="id" title="var">G</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⊢ (<span class="id" title="var">G</span> &amp;&amp;{⊤}&amp;&amp;&gt; (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>)) ∗ <span class="id" title="var">G</span> ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">n</span> , ⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> <span class="id" title="var">n</span>) ⌝<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">points_to_r_intermediate</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> (&lt;[ <span class="id" title="var">l</span> := (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> (<span class="id" title="var">n</span> + 1)) ]&gt; σ).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">na_read_end</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ <span class="id" title="var">G</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">points_to_r_intermediate</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> <span class="id" title="var">G</span> ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ⊢ ▷ |={⊤}=&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">n</span> , ⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> <span class="id" title="var">n</span>) ∧ <span class="id" title="var">n</span> ≥ 1 ⌝<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> (&lt;[ <span class="id" title="var">l</span> := (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> (<span class="id" title="var">n</span> - 1)) ]&gt; σ).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">atomic_write</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> <span class="id" title="var">v'</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;⊢ (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>) ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> 0) ⌝<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> (&lt;[ <span class="id" title="var">l</span> := (<span class="id" title="var">v'</span>, <span class="id" title="var">Reading</span> 0) ]&gt; σ).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">atomic_read</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ <span class="id" title="var">G</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">G</span> &amp;&amp;{⊤}&amp;&amp;&gt; (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>)) ∗ <span class="id" title="var">G</span> ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">n</span> , ⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> <span class="id" title="var">n</span>) ⌝<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ <span class="id" title="var">G</span> ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">non_atomic_map_insert</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(σ !! <span class="id" title="var">l</span> = <span class="id" title="var">None</span>) →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗ (<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>) ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> (&lt;[ <span class="id" title="var">l</span> := (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> 0) ]&gt; σ).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">non_atomic_map_delete</span> <span class="id" title="var">γ</span> <span class="id" title="var">l</span> <span class="id" title="var">v</span> σ :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">l</span> ↦[<span class="id" title="var">γ</span>] <span class="id" title="var">v</span>) ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> σ ={⊤}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⌜ σ !! <span class="id" title="var">l</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">v</span>, <span class="id" title="var">Reading</span> 0) ⌝ ∗ <span class="id" title="var">non_atomic_map</span> <span class="id" title="var">γ</span> (<span class="id" title="var">delete</span> <span class="id" title="var">l</span> σ).<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">NonAtomicMap</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

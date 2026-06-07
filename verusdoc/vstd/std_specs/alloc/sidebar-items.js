@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["_verus_external_fn_specification_935_alloc_32__58__58__32_boxed_32__58__58__32_box__new"],"struct":["ExGlobal"]};

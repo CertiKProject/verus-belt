@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["group_laws_cmp","lemma_option_obeys_cmp_spec","obeys_cmp_ord","obeys_cmp_partial_ord","obeys_cmp_spec","obeys_partial_cmp_spec_properties"]};

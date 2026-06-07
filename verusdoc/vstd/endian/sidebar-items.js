@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Endian"],"fn":["base_upper_bound_excl","endianness","group_endian_nat_axioms","to_big_from_digits"],"struct":["EndianNat"],"trait":["Base","BasePow2","CompatibleSmallerBaseFor"]};

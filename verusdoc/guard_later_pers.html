@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>guard_later_pers</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library guard_later_pers</h1>
+
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+Say you have <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">&amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt;</span> <span class="inlinecode">(▷</span> <span class="inlinecode"><span class="id" title="var">Q</span>)</span> and you want to eliminate the <span class="inlinecode">▷</span>.
+If <span class="inlinecode"><span class="id" title="var">Q</span></span> is timeless, you can do this with <span class="inlinecode"><span class="id" title="var">guards_remove_later</span></span>.
+
+<div class="paragraph"> </div>
+
+What if <span class="inlinecode"><span class="id" title="var">Q</span></span> is the conjunction of a timeless part and a persistent part?
+Persistent props can be moved in and out of guards easily.
+Thus you can eliminate the <span class="inlinecode">▷</span> by moving the persistent part out,
+eliminating the later, then moving the persistent part back in.
+This file contains some type classes to automate this. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">GuardLaterPers</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">LaterGuardExtractable</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_pers</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_timeless</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">lg_pers</span> : <span class="id" title="var">Persistent</span> <span class="id" title="var">extract_pers</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">lg_timeless</span> : <span class="id" title="var">Timeless</span> <span class="id" title="var">extract_timeless</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">lg_split</span>: <span class="id" title="var">P</span> ⊣⊢ (<span class="id" title="var">extract_timeless</span> ∗ <span class="id" title="var">extract_pers</span>) % <span class="id" title="var">I</span><br/>
+}.<br/>
+
+<br/>
+#[<span class="id" title="tactic">refine</span>]<br/>
+<span class="id" title="keyword">Global</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">later_guard_extractable_pers</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) {<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">LaterGuardExtractable</span> <span class="id" title="var">P</span> := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_timeless</span> := <span class="id" title="var">True</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_pers</span> := <span class="id" title="var">P</span> ;<br/>
+}.<br/>
+#[<span class="id" title="tactic">refine</span>]<br/>
+<span class="id" title="keyword">Global</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">later_guard_extractable_timeless</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>} (<span class="id" title="var">T</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) {<span class="id" title="var">timeless</span>: <span class="id" title="var">Timeless</span> <span class="id" title="var">T</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">LaterGuardExtractable</span> <span class="id" title="var">T</span> := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_timeless</span> := <span class="id" title="var">T</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_pers</span> := <span class="id" title="var">True</span> ;<br/>
+}.<br/>
+#[<span class="id" title="tactic">refine</span>]<br/>
+<span class="id" title="keyword">Global</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">later_guard_extractable_sep</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>} (<span class="id" title="var">P1</span> <span class="id" title="var">P2</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">lg1</span>: <span class="id" title="var">LaterGuardExtractable</span> <span class="id" title="var">P1</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">lg2</span>: <span class="id" title="var">LaterGuardExtractable</span> <span class="id" title="var">P2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">LaterGuardExtractable</span> (<span class="id" title="var">P1</span> ∗ <span class="id" title="var">P2</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_timeless</span> := @<span class="id" title="var">extract_timeless</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">lg1</span> ∗ @<span class="id" title="var">extract_timeless</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">lg2</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">extract_pers</span> := @<span class="id" title="var">extract_pers</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">lg1</span> ∗ @<span class="id" title="var">extract_pers</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">lg2</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>}.<br/>
+<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">invGS_gen</span> <span class="id" title="var">hlc</span> <span class="id" title="var">Σ</span>}.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">extract_later1</span> (<span class="id" title="var">X</span> <span class="id" title="var">T</span> <span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">tl</span>: <span class="id" title="var">Timeless</span> <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">X</span> ∗ (<span class="id" title="var">X</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; ▷ (<span class="id" title="var">T</span> ∗ <span class="id" title="var">P</span>))) ={<span class="id" title="var">E</span>}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">X</span> ∗ ▷ (<span class="id" title="var">X</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; (<span class="id" title="var">T</span> ∗ <span class="id" title="var">P</span>))).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">extract_later</span> (<span class="id" title="var">X</span> <span class="id" title="var">S</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ex</span>: <span class="id" title="var">LaterGuardExtractable</span> <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">X</span> ∗ (<span class="id" title="var">X</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; ▷ <span class="id" title="var">S</span>)) ={<span class="id" title="var">E</span>}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">X</span> ∗ ▷ (<span class="id" title="var">X</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; <span class="id" title="var">S</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">GuardLaterPers</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>factoring_props</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library factoring_props</h1>
+
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+In general, it does <i>not</i> hold that:
+<pre>
+    (P ⊢ Q) → (P &amp;&amp;{_}&amp;&amp;&gt; Q)
+</pre>
+(See Appendix 1.4; https://arxiv.org/pdf/2309.04851 for a counter-example.)
+
+<div class="paragraph"> </div>
+
+However, this does hold if we can "factor" P as Q ∗ R.
+<pre>
+    (Q ∗ R) &amp;&amp;{_}&amp;&amp;&gt; Q.
+</pre>
+For this reason, it is useful to identify propositions that Q that are <i>always</i>
+factor-out-able in this sense. This is true for propositions like `own γ x`.
+That is, we have:
+
+<div class="paragraph"> </div>
+
+    If <span class="inlinecode">`<span class="id" title="var">P</span></span> <span class="inlinecode">⊢</span> <span class="inlinecode"><span class="id" title="var">own</span></span> <span class="inlinecode"><span class="id" title="var">γ</span></span> <span class="inlinecode"><span class="id" title="var">x</span>`</span> then there exists <span class="inlinecode"><span class="id" title="var">Q</span></span> such that <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">⊣⊢</span> <span class="inlinecode"><span class="id" title="var">own</span></span> <span class="inlinecode"><span class="id" title="var">γ</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">∗</span> <span class="inlinecode"><span class="id" title="var">Q</span></span>
+
+<div class="paragraph"> </div>
+
+(Specifically, we can take <span class="inlinecode"><span class="id" title="var">Q</span></span> to be <span class="inlinecode"><span class="id" title="var">own</span></span> <span class="inlinecode"><span class="id" title="var">γ</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">-∗</span> <span class="inlinecode"><span class="id" title="var">P</span></span>.)
+
+<div class="paragraph"> </div>
+
+This lets us prove:
+<pre>
+    (P ⊢ own γ x) → P &amp;&amp;{_}&amp;&amp;&gt; own γ x
+</pre>
+Now, I don't know if this particular rule is very useful, but this factorizability property
+<i>is</i> crucial for stating and proving Leaf's (∧)-related rules.
+
+<div class="paragraph"> </div>
+
+Unfortunately, I don't have a clean description of the class of propositions Q that
+meet this factorizability property, let alone one that also handles all the fiddly
+details with <span class="inlinecode">◇</span> and <span class="inlinecode">▷</span> that we need. I do know that all propositions of the form
+<span class="inlinecode"><span class="id" title="var">uPred_ownM</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> work for everything we need (thus any proposition of the form
+<span class="inlinecode"><span class="id" title="var">own</span></span> <span class="inlinecode"><span class="id" title="var">γ</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> and <span class="inlinecode">∗</span>-conjunctions thereof). So that's what we classify here.
+
+<div class="paragraph"> </div>
+
+This definitely isn't the complete set -- we should probably extend it to include
+persistent propositions at the very least.
+
+<div class="paragraph"> </div>
+
+In principle, it would be nice to have a clean definition like:
+<pre>
+    Definition can_always_factor_out Q := ∀ P , (P -∗ Q) ∗ P ⊢ Q ∗ (Q -∗ P).
+</pre>
+However, I haven't figured out how to make use of such a definition.
+For example, I haven't been able to answer basic questions, like
+whether this is true:
+<pre>
+    can_always_factor_out P →
+    can_always_factor_out Q →
+    can_always_factor_out (P ∗ Q)
+</pre>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Factoring</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">point_prop</span> (<span class="id" title="var">P</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) := ∃ <span class="id" title="var">x</span> (<span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>), <span class="id" title="var">P</span> ≡ (<span class="id" title="var">uPred_ownM</span> <span class="id" title="var">x</span> ∗ □<span class="id" title="var">Q</span>)%<span class="id" title="var">I</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">point_prop_proper</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Proper</span> ((≡) ==&gt; (↔)) <span class="id" title="var">point_prop</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">point_prop_True</span> : <span class="id" title="var">point_prop</span> <span class="id" title="var">True</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">point_prop_of_pers</span> (<span class="id" title="var">P</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">Persistent</span> <span class="id" title="var">P</span> → <span class="id" title="var">point_prop</span> <span class="id" title="var">P</span>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">point_prop_sep</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">P</span>) (<span class="id" title="var">b</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">Q</span>)  : <span class="id" title="var">point_prop</span> (<span class="id" title="var">P</span> ∗ <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">point_prop_big_sepS</span> `{!<span class="id" title="var">EqDecision</span> <span class="id" title="var">X</span>, !<span class="id" title="var">Countable</span> <span class="id" title="var">X</span>} (<span class="id" title="var">S</span> : <span class="id" title="var">gset</span> <span class="id" title="var">X</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">X</span> → <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x_point</span> : ∀ (<span class="id" title="var">x</span>: <span class="id" title="var">X</span>) , <span class="id" title="var">x</span> ∈ <span class="id" title="var">S</span> → <span class="id" title="var">point_prop</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">point_prop</span> ([∗ <span class="id" title="tactic">set</span>] <span class="id" title="var">x</span> ∈ <span class="id" title="var">S</span> , <span class="id" title="var">P</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">i</span> : !<span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">point_prop_own</span> <span class="id" title="var">γ</span> (<span class="id" title="var">x</span>: <span class="id" title="var">A</span>) : <span class="id" title="var">point_prop</span> (<span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">own_separates_out</span> <span class="id" title="var">γ</span> (<span class="id" title="var">x</span>: <span class="id" title="var">A</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">P</span> -∗ <span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span>) ∗ <span class="id" title="var">P</span> ⊢ (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span> ∗ (<span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span> -∗ <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">own_separates_out_except0</span> <span class="id" title="var">γ</span> (<span class="id" title="var">x</span>: <span class="id" title="var">A</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">P</span> -∗ ◇ <span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span>) ∗ <span class="id" title="var">P</span> ⊢ (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;◇ <span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span> ∗ (<span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span> -∗ <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">own_separates_out_point</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">point</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">P</span> -∗ <span class="id" title="var">Q</span>) ∗ <span class="id" title="var">P</span> ⊢ (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">own_separates_out_except0_point</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">point</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">P</span> -∗ ◇ <span class="id" title="var">Q</span>) ∗ <span class="id" title="var">P</span> ⊢ (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(◇ <span class="id" title="var">Q</span>) ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">own_separates_out_except0_point_later</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">n</span>: <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">point</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">P</span> -∗ ▷^<span class="id" title="var">n</span> ◇ <span class="id" title="var">Q</span>) ∗ <span class="id" title="var">P</span> ⊢ (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▷^<span class="id" title="var">n</span> ((◇ <span class="id" title="var">Q</span>) ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">P</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Factoring</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

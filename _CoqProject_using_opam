@@ -1,0 +1,133 @@
+# Leaf
+
+-Q src/guarding guarding
+
+src/guarding/internal/auth_frag_util.v
+src/guarding/internal/wsat_util.v
+src/guarding/internal/factoring_upred.v
+src/guarding/internal/inved.v
+src/guarding/internal/na_invariants_fork.v
+src/guarding/internal/misc_tactics.v
+
+src/guarding/own_and.v
+src/guarding/own_and_own_sep.v
+src/guarding/factoring_props.v
+src/guarding/guard.v
+src/guarding/tactics.v
+src/guarding/guard_later_pers.v
+
+src/guarding/storage_protocol/protocol.v
+src/guarding/storage_protocol/base_storage_opt.v
+
+src/guarding/lib/fractional.v
+src/guarding/lib/lifetime.v
+src/guarding/lib/cancellable.v
+src/guarding/lib/non_atomic_map.v
+src/guarding/lib/rwlock.v
+src/guarding/lib/boxes.v
+
+-Q src/lambda_verus lrust
+
+# VerusBelt
+
+# Leaf Lifetime Logic (LeLiLo)
+
+src/lambda_verus/lifetime/lifetime_internals/ra.v
+src/lambda_verus/lifetime/lifetime_internals/inv.v
+src/lambda_verus/lifetime/lifetime_internals/augment_outlives.v
+src/lambda_verus/lifetime/lifetime_internals/expire_lt.v
+src/lambda_verus/lifetime/lifetime_internals/iff.v
+src/lambda_verus/lifetime/lifetime_internals/join.v
+src/lambda_verus/lifetime/lifetime_internals/split.v
+src/lambda_verus/lifetime/lifetime_internals/new_lt.v
+src/lambda_verus/lifetime/lifetime_internals/reborrow.v
+src/lambda_verus/lifetime/lifetime_internals/unborrow.v
+src/lambda_verus/lifetime/lifetime_internals/unnest.v
+src/lambda_verus/lifetime/lifetime_full.v
+
+src/lambda_verus/util/basic.v
+src/lambda_verus/util/vector.v
+src/lambda_verus/util/update.v
+src/lambda_verus/util/discrete_fun.v
+src/lambda_verus/util/fancy_lists.v
+src/lambda_verus/util/adequacy_util.v
+src/lambda_verus/util/cancellable_na_invariants.v
+src/lambda_verus/util/cancellable.v
+src/lambda_verus/util/cellmap.v
+src/lambda_verus/util/non_atomic_cell_map.v
+src/lambda_verus/util/atomic_lock_counter.v
+
+src/lambda_verus/prophecy/syn_type.v
+src/lambda_verus/prophecy/prophecy.v
+
+# Language definition (opsem and program logic)
+
+src/lambda_verus/lang/adequacy.v
+src/lambda_verus/lang/heap.v
+src/lambda_verus/lang/lang.v
+src/lambda_verus/lang/lifting.v
+src/lambda_verus/lang/notation.v
+src/lambda_verus/lang/proofmode.v
+src/lambda_verus/lang/races.v
+src/lambda_verus/lang/tactics.v
+src/lambda_verus/lang/time.v
+src/lambda_verus/lang/lib/new_delete.v
+src/lambda_verus/lang/lib/memcpy.v
+src/lambda_verus/lang/lib/spawn.v
+
+# Type-specs
+
+src/lambda_verus/typing/base.v
+src/lambda_verus/typing/uniq_cmra.v
+src/lambda_verus/typing/lifetime.v
+src/lambda_verus/typing/lft_contexts.v
+src/lambda_verus/typing/inv_context.v
+src/lambda_verus/typing/type.v
+src/lambda_verus/typing/type_context.v
+src/lambda_verus/typing/cont_context.v
+src/lambda_verus/typing/cont.v
+src/lambda_verus/typing/product.v
+src/lambda_verus/typing/programs.v
+src/lambda_verus/typing/programs_util.v
+src/lambda_verus/typing/programs_util_own.v
+src/lambda_verus/typing/programs_util_atomic.v
+src/lambda_verus/typing/bool.v
+src/lambda_verus/typing/int.v
+src/lambda_verus/typing/shr_bor.v
+src/lambda_verus/typing/uniq_util.v
+src/lambda_verus/typing/ghost.v
+src/lambda_verus/typing/uniq_bor.v
+src/lambda_verus/typing/uninit.v
+src/lambda_verus/typing/freeable_util.v
+src/lambda_verus/typing/own.v
+src/lambda_verus/typing/pptr.v
+src/lambda_verus/typing/pcell.v
+src/lambda_verus/typing/tracked.v
+src/lambda_verus/typing/mod_ty.v
+src/lambda_verus/typing/product_split.v
+src/lambda_verus/typing/type_sum.v
+src/lambda_verus/typing/borrow.v
+src/lambda_verus/typing/sum.v
+src/lambda_verus/typing/ra.v
+src/lambda_verus/typing/protocol.v
+src/lambda_verus/typing/local_inv.v
+src/lambda_verus/typing/atomic_inv.v
+src/lambda_verus/typing/function.v
+src/lambda_verus/typing/base_type.v
+src/lambda_verus/typing/fixpoint.v
+src/lambda_verus/typing/spawn.v
+src/lambda_verus/typing/soundness.v
+
+src/lambda_verus/typing/examples/assert.v
+src/lambda_verus/typing/examples/list.v
+src/lambda_verus/typing/examples/pcell_example.v
+
+
+-arg -w -arg -argument-scope-delimiter
+-arg -w -arg -notation-overridden
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -unknown-warning
+-arg -w -arg -argument-scope-delimiter
+-arg -w -arg -notation-incompatible-prefix
+-arg -w -arg -non-reversible-notation
+-arg -w -arg -hiding-delimiting-key

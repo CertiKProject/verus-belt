@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["auto_spec","make_spec_type","self_view"],"macro":["set_build","set_build_debug"],"mod":["exec_spec"]};

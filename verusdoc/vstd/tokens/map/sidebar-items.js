@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["GhostMapAuth","GhostPersistentPointsTo","GhostPersistentSubmap","GhostPointsTo","GhostSubmap"]};

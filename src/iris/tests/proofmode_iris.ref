@@ -1,0 +1,377 @@
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  N : namespace
+  P : iProp Σ
+  ============================
+  "H" : inv N (<pers> P)
+  "H2" : ▷ <pers> P
+  --------------------------------------□
+  |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> ▷ P)
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  N : namespace
+  P : iProp Σ
+  ============================
+  "H" : inv N (<pers> P)
+  "H2" : ▷ <pers> P
+  --------------------------------------□
+  "Hclose" : ▷ <pers> P ={⊤ ∖ ↑N,⊤}=∗ emp
+  --------------------------------------∗
+  |={⊤ ∖ ↑N,⊤}=> ▷ P
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  γ : gname
+  p : Qp
+  N : namespace
+  P : iProp Σ
+  ============================
+  cinv N γ (<pers> P) ∗ cinv_own γ p ={⊤}=∗ cinv_own γ p ∗ ▷ P
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  γ : gname
+  p : Qp
+  N : namespace
+  P : iProp Σ
+  ============================
+  _ : cinv N γ (<pers> P)
+  "HP" : ▷ <pers> P
+  --------------------------------------□
+  "Hown" : cinv_own γ p
+  --------------------------------------∗
+  |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> cinv_own γ p ∗ ▷ P)
+"test_iInv_2_with_close"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  γ : gname
+  p : Qp
+  N : namespace
+  P : iProp Σ
+  ============================
+  _ : cinv N γ (<pers> P)
+  "HP" : ▷ <pers> P
+  --------------------------------------□
+  "Hown" : cinv_own γ p
+  "Hclose" : ▷ <pers> P ={⊤ ∖ ↑N,⊤}=∗ emp
+  --------------------------------------∗
+  |={⊤ ∖ ↑N,⊤}=> cinv_own γ p ∗ ▷ P
+"test_iInv_4"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  t : na_inv_pool_name
+  N : namespace
+  E1, E2 : coPset
+  P : iProp Σ
+  H : ↑N ⊆ E2
+  ============================
+  _ : na_inv t N (<pers> P)
+  "HP" : ▷ <pers> P
+  --------------------------------------□
+  "Hown1" : na_own t E1
+  "Hown2" : na_own t (E2 ∖ ↑N)
+  --------------------------------------∗
+  |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N)) ∗
+    (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
+"test_iInv_4_with_close"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  t : na_inv_pool_name
+  N : namespace
+  E1, E2 : coPset
+  P : iProp Σ
+  H : ↑N ⊆ E2
+  ============================
+  _ : na_inv t N (<pers> P)
+  "HP" : ▷ <pers> P
+  --------------------------------------□
+  "Hown1" : na_own t E1
+  "Hown2" : na_own t (E2 ∖ ↑N)
+  "Hclose" : ▷ <pers> P ∗ na_own t (E2 ∖ ↑N) ={⊤}=∗ na_own t E2
+  --------------------------------------∗
+  |={⊤}=> na_own t E1 ∗ na_own t E2 ∗ ▷ P
+"test_iInv_12"
+     : string
+The command has indeed failed with message:
+Tactic failure: iInv: selector 34 is not of the right type .
+The command has indeed failed with message:
+Tactic failure: iInv: invariant nroot not found.
+The command has indeed failed with message:
+Tactic failure: iInv: invariant "H2" not found.
+"test_iInv_error_no_update"
+     : string
+The command has indeed failed with message:
+Tactic failure: iInv: cannot open invariant (inv N P) in the current goal
+(the goal should be a fancy update or WP,
+or another modality that supports invariant opening).
+"test_iInv_accessor_variable"
+     : string
+The command has indeed failed with message:
+Tactic failure: Missing intro pattern for accessor variable.
+The command has indeed failed with message:
+Tactic failure: Missing intro pattern for accessor variable.
+The command has indeed failed with message:
+Tactic failure: Missing intro pattern for accessor variable.
+The command has indeed failed with message:
+Tactic failure: Missing intro pattern for accessor variable.
+"test_frac_split_combine"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  inG0 : inG Σ fracR
+  γ : gname
+  ============================
+  "H1" : own γ (1 / 2)%Qp
+  "H2" : own γ (1 / 2)%Qp
+  --------------------------------------∗
+  own γ 1%Qp
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  inG0 : inG Σ fracR
+  γ : gname
+  ============================
+  "H" : own γ 1%Qp
+  --------------------------------------∗
+  own γ 1%Qp
+"test_iDestruct_mod_not_fresh"
+     : string
+The command has indeed failed with message:
+Tactic failure: iMod: "H" not fresh.
+"test_iIntros_lc"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  n, m : nat
+  ============================
+  "Hlc1" : £ (S n)
+  "Hlc2" : £ m
+  --------------------------------------∗
+  £ (S n)
+"lc_iSplit_lc"
+     : string
+2 goals
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  n, m : nat
+  ============================
+  "Hlc1" : £ (S n)
+  --------------------------------------∗
+  £ (S n)
+
+goal 2 is:
+ "Hlc2" : £ m
+ --------------------------------------∗
+ £ m
+"test_iCombine_pointsto_no_beta"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  ghost_varG0 : ghost_varG Σ nat
+  l : gname
+  v : nat
+  q1, q2 : Qp
+  ============================
+  "H" : ghost_var l (q1 + q2) v
+  --------------------------------------∗
+  ghost_var l (q1 + q2) v
+"iMod_WP_mask_mismatch"
+     : string
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iApply fupd_wp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iApply fupd_wp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+"iMod_WP_atomic_mask_mismatch"
+     : string
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+"iFrame_WP_no_instantiate"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Λ : language
+  Σ : gFunctors
+  irisGS_gen0 : irisGS_gen hlc Λ Σ
+  e : expr Λ
+  Φ : nat → iProp Σ
+  ============================
+  _ : Φ 0
+  --------------------------------------□
+  WP e {{ _, ∃ n : nat, Φ n }}
+"iInv_WP"
+     : string
+2 goals
+  
+  hlc : has_lc
+  Λ : language
+  Σ : gFunctors
+  irisGS_gen0 : irisGS_gen hlc Λ Σ
+  e : expr Λ
+  N : namespace
+  E : coPset
+  P : iProp Σ
+  H : ↑N ⊆ E
+  ============================
+  Atomic (stuckness_to_atomicity NotStuck) e
+
+goal 2 is:
+ "HP" : ▷ P
+ --------------------------------------∗
+ WP e @ E ∖ ↑N {{ _, |={E ∖ ↑N}=> ▷ P ∗ True }}
+"iMod_TWP_mask_mismatch"
+     : string
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iApply fupd_twp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+Use [iApply fupd_twp; iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+"iMod_TWP_atomic_mask_mismatch"
+     : string
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+  Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+The command has indeed failed with message:
+Tactic failure: 
+"Goal and eliminated modality must have the same mask.
+  Use [iMod (fupd_mask_subseteq E2)] to adjust the mask of your goal to [E2]".
+"iFrame_TWP_no_instantiate"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Λ : language
+  Σ : gFunctors
+  irisGS_gen0 : irisGS_gen hlc Λ Σ
+  e : expr Λ
+  Φ : nat → iProp Σ
+  ============================
+  _ : Φ 0
+  --------------------------------------□
+  WP e [{ _, ∃ n : nat, Φ n }]
+"iInv_TWP"
+     : string
+2 goals
+  
+  hlc : has_lc
+  Λ : language
+  Σ : gFunctors
+  irisGS_gen0 : irisGS_gen hlc Λ Σ
+  e : expr Λ
+  N : namespace
+  E : coPset
+  P : iProp Σ
+  H : ↑N ⊆ E
+  ============================
+  Atomic (stuckness_to_atomicity NotStuck) e
+
+goal 2 is:
+ "HP" : ▷ P
+ --------------------------------------∗
+ WP e @ E ∖ ↑N [{ _, |={E ∖ ↑N}=> ▷ P ∗ True }]
+"test_iInv"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  I : biIndex
+  N : namespace
+  E : coPset
+  𝓟 : iProp Σ
+  H : ↑N ⊆ E
+  ============================
+  "HP" : ⎡ ▷ 𝓟 ⎤
+  --------------------------------------∗
+  |={E ∖ ↑N}=> ⎡ ▷ 𝓟 ⎤ ∗ (|={E}=> emp)
+"test_iInv_with_close"
+     : string
+1 goal
+  
+  hlc : has_lc
+  Σ : gFunctors
+  invGS_gen0 : invGS_gen hlc Σ
+  I : biIndex
+  N : namespace
+  E : coPset
+  𝓟 : iProp Σ
+  H : ↑N ⊆ E
+  ============================
+  "HP" : ⎡ ▷ 𝓟 ⎤
+  "Hclose" : ⎡ ▷ 𝓟 ={E ∖ ↑N,E}=∗ emp ⎤
+  --------------------------------------∗
+  |={E ∖ ↑N,E}=> emp

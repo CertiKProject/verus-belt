@@ -1,0 +1,8 @@
+(env
+ (_ ; Applies to all profiles (dev, release, ...).
+  (coq
+   (flags ; Configure the coqc flags.
+    (:standard ; Keeping the default flags.
+     ; Add custom flags (to be kept in sync with _CoqProject).
+     -w -argument-scope-delimiter
+     -w -notation-incompatible-prefix)))))

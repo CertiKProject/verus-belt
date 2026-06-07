@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["i128_specs","i16_specs","i32_specs","i64_specs","i8_specs","isize_specs","u128_specs","u16_specs","u32_specs","u64_specs","u8_specs","usize_specs"]};

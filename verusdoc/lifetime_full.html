@@ -1,0 +1,548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>lifetime_full</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library lifetime_full</h1>
+
+<div class="code">
+
+<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The Leaf Liftime Logic.
+
+<div class="paragraph"> </div>
+
+This is based on RustBelt's lifetime logic, and has many similar rules, but it incorporates
+Leaf's guarding operator to handle both shared borrows and lifetime inclusions. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">LlftLogic</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">llft_logicGS</span> <span class="id" title="var">Σ</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">invGS</span> <span class="id" title="var">Σ</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+There are the namespaces to know about as the user of the logic.
+      All view shifts take place at <span class="inlinecode">↑<span class="id" title="var">Nllft</span></span> and all guards (e.g., in lifetime inclusions)
+      take place at <span class="inlinecode">↑<span class="id" title="var">NllftG</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Nllft</span> := <span class="id" title="var">nroot</span> .@ "leaf_lifetime_logic".<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">NllftG</span> := <span class="id" title="var">nroot</span> .@ "leaf_lifetime_logic" .@ "guarding".<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">NllftUsr</span> := <span class="id" title="var">nroot</span> .@ "leaf_lifetime_logic" .@ "user".<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A Lifetime κ is defined as a <span class="inlinecode"><span class="id" title="var">gset</span></span> <span class="inlinecode"><span class="id" title="var">nat</span></span>. Though this should technically be
+  an implementation detail, this makes it easy to export the basic properties of <span class="inlinecode"><span class="id" title="var">Lifetime</span></span>
+  (EqDecidable, Countable) and <span class="inlinecode">⊓</span> (associativity, commutativity). 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lft</span> := <span class="id" title="var">gset</span> <span class="id" title="var">nat</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">llft_intersect</span> : <span class="id" title="var">Meet</span> <span class="id" title="var">lft</span> := <span class="id" title="var">λ</span> <span class="id" title="var">κ1</span> <span class="id" title="var">κ2</span>, <span class="id" title="var">κ1</span> ∪ <span class="id" title="var">κ2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_empty</span> : <span class="id" title="var">lft</span> := ∅.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Definitions of the lifetime tokens. Note that these aren't fractional since you
+  use Leaf concepts instead. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_alive</span> (<span class="id" title="var">κ</span> : <span class="id" title="var">lft</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_dead</span> (<span class="id" title="var">κ</span> : <span class="id" title="var">lft</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_ctx</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;@[ κ ]" := (<span class="id" title="var">llft_alive</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "@[ κ ]") : <span class="id" title="var">bi_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;[† κ ]" := (<span class="id" title="var">llft_dead</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "[† κ ]") : <span class="id" title="var">bi_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Lifetime inclusion is, by definition, a guard proposition. This provides us with
+  an analogue of RustBelt's "dynamic lifetime inclusion": to derive new lifetime inclusions
+  we can use Leaf to derive new guard propositions. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_incl</span> (<span class="id" title="var">κ1</span> <span class="id" title="var">κ2</span> : <span class="id" title="var">lft</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ1</span> ] &amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt; @[ <span class="id" title="var">κ2</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> &quot;⊑" := <span class="id" title="var">llft_incl</span> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70) : <span class="id" title="var">bi_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Lifetime tokens and their algebra 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">pers_llft_ctx</span> : <span class="id" title="var">Persistent</span> <span class="id" title="var">llft_ctx</span>.<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">pers_llft_dead</span> <span class="id" title="var">κ</span> : <span class="id" title="var">Persistent</span> ([† <span class="id" title="var">κ</span> ]).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">timeless_llft_alive</span> <span class="id" title="var">κ</span> : <span class="id" title="var">Timeless</span> (@[ <span class="id" title="var">κ</span> ]).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">timeless_llft_dead</span> <span class="id" title="var">κ</span> : <span class="id" title="var">Timeless</span> ([† <span class="id" title="var">κ</span> ]).<br/>
+ 
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_not_own_end</span> <span class="id" title="var">κ</span> : @[ <span class="id" title="var">κ</span> ] -∗ [† <span class="id" title="var">κ</span> ] -∗ <span class="id" title="var">False</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_not_own_end_and</span> <span class="id" title="var">κ</span> : @[ <span class="id" title="var">κ</span> ] ∧ [† <span class="id" title="var">κ</span> ] ⊢ <span class="id" title="var">False</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_dead_implies_dead</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">NllftG</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢ <span class="id" title="var">llft_ctx</span> -∗ <span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ'</span> -∗ [† <span class="id" title="var">κ'</span> ] ={<span class="id" title="var">E</span>}=∗ [† <span class="id" title="var">κ</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_intersect_incl_l</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> : ⊢ (<span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span>) ⊑ <span class="id" title="var">κ</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_intersect_incl_r</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> : ⊢ (<span class="id" title="var">κ'</span> ⊓ <span class="id" title="var">κ</span>) ⊑ <span class="id" title="var">κ</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_trans</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">κ''</span> : ⊢ <span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ'</span> -∗ <span class="id" title="var">κ'</span> ⊑ <span class="id" title="var">κ''</span> -∗ <span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ''</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_glb</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">κ''</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ'</span> -∗ <span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ''</span> -∗ <span class="id" title="var">κ</span> ⊑ (<span class="id" title="var">κ'</span> ⊓ <span class="id" title="var">κ''</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_weaken_lhs_l</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">κ''</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ'</span> ⊢ (<span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ''</span>) ⊑ <span class="id" title="var">κ'</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_weaken_lhs_r</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">κ''</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ'</span> ⊢ (<span class="id" title="var">κ''</span> ⊓ <span class="id" title="var">κ</span>) ⊑ <span class="id" title="var">κ'</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_inter_l</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span> ] ⊢ @[ <span class="id" title="var">κ</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_inter_r</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span> ] ⊢ @[ <span class="id" title="var">κ'</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_inter_and</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span> ] ⊣⊢ @[ <span class="id" title="var">κ</span> ] ∧ @[ <span class="id" title="var">κ'</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_end_inter</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[† <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span>] ⊣⊢ [† <span class="id" title="var">κ</span> ] ∨ [† <span class="id" title="var">κ'</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_unit</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢ @[ <span class="id" title="var">llft_empty</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_end_unit</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[† <span class="id" title="var">llft_empty</span> ] ⊢ <span class="id" title="var">False</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Allocating a new lifetime token 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_begin'</span> <span class="id" title="var">E</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> ⊢ |={<span class="id" title="var">E</span>}=&gt; ∃ <span class="id" title="var">κ</span>, @[ <span class="id" title="var">κ</span> ] ∗ ⌜<span class="id" title="var">κ</span> ≠ <span class="id" title="var">llft_empty</span>⌝.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_end'</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ</span> ≠ <span class="id" title="var">llft_empty</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ @[ <span class="id" title="var">κ</span> ] ={↑<span class="id" title="var">Nllft</span>}[∅]▷=∗ [† <span class="id" title="var">κ</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_begin</span> <span class="id" title="var">E</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> ⊢ |={<span class="id" title="var">E</span>}=&gt; ∃ <span class="id" title="var">κ</span>, @[ <span class="id" title="var">κ</span> ] ∗ □ (@[ <span class="id" title="var">κ</span> ] ={↑<span class="id" title="var">Nllft</span>}[∅]▷=∗ [† <span class="id" title="var">κ</span> ]).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Shared borrows 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_borrow_shared</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▷ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ (@[ <span class="id" title="var">κ</span> ] &amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt; ▷ <span class="id" title="var">P</span>) ∗ ([† <span class="id" title="var">κ</span> ] ={<span class="id" title="var">E</span>}=∗ ▷ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Indexed borrows and full borrows 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Idx</span>: <span class="id" title="keyword">Type</span> := <span class="id" title="var">slice_name</span> × <span class="id" title="var">gset</span> <span class="id" title="var">nat</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">idx_bor</span> (<span class="id" title="var">κ</span>: <span class="id" title="var">lft</span>) (<span class="id" title="var">idx</span>: <span class="id" title="var">Idx</span>) (<span class="id" title="var">P</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>.<br/>
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">full_bor</span> (<span class="id" title="var">κ</span>: <span class="id" title="var">lft</span>) (<span class="id" title="var">P</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>.<br/>
+<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">pers_idx_bor</span> <span class="id" title="var">κ</span> <span class="id" title="var">idx</span> <span class="id" title="var">P</span> : <span class="id" title="var">Persistent</span> (<span class="id" title="var">idx_bor</span> <span class="id" title="var">κ</span> <span class="id" title="var">idx</span> <span class="id" title="var">P</span>).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">idx_bor_tok</span> (<span class="id" title="var">idx</span>: <span class="id" title="var">Idx</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> (<span class="id" title="var">sn</span>, <span class="id" title="var">κ'</span>) := <span class="id" title="var">idx</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">OwnBorState</span> <span class="id" title="var">llft_name</span> <span class="id" title="var">sn</span> (<span class="id" title="var">Borrow</span> (<span class="id" title="var">set_map</span> <span class="id" title="var">LtAtomSwell</span> <span class="id" title="var">κ'</span>) {[<span class="id" title="var">default_dead</span>]}).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;&amp;{ κ }" := (<span class="id" title="var">full_bor</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "&amp;{ κ }") : <span class="id" title="var">bi_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;&amp;{ κ , i }" := (<span class="id" title="var">idx_bor</span> <span class="id" title="var">κ</span> <span class="id" title="var">i</span>) (<span class="id" title="var">format</span> "&amp;{ κ , i }") : <span class="id" title="var">bi_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">full_bor_proper</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Proper</span> ((≡) ==&gt; (≡)) (&amp;{<span class="id" title="var">κ</span>})%<span class="id" title="var">I</span>.<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">idx_bor_proper</span> <span class="id" title="var">κ</span> <span class="id" title="var">i</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Proper</span> ((≡) ==&gt; (≡)) (&amp;{<span class="id" title="var">κ</span>, <span class="id" title="var">i</span>})%<span class="id" title="var">I</span>.<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">timeless_idx_bor_tok</span> <span class="id" title="var">i</span> : <span class="id" title="var">Timeless</span> (<span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">i</span>).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_idx</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> ⊣⊢ ∃ <span class="id" title="var">idx</span> , &amp;{<span class="id" title="var">κ</span>, <span class="id" title="var">idx</span>} <span class="id" title="var">P</span> ∗ <span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">idx</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_idx_to_full</span> <span class="id" title="var">κ</span> <span class="id" title="var">idx</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;{<span class="id" title="var">κ</span>, <span class="id" title="var">idx</span>} <span class="id" title="var">P</span> -∗ <span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">idx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_idx_shorten</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">idx</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ'</span> ⊑ <span class="id" title="var">κ</span> -∗ &amp;{<span class="id" title="var">κ</span>, <span class="id" title="var">idx</span>} <span class="id" title="var">P</span> -∗ &amp;{<span class="id" title="var">κ'</span>, <span class="id" title="var">idx</span>} <span class="id" title="var">P</span>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_acc'</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">κ'</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ <span class="id" title="var">κ'</span> ⊑ <span class="id" title="var">κ</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ @[<span class="id" title="var">κ'</span>] -∗ |={<span class="id" title="var">E</span>}=&gt; (▷ <span class="id" title="var">P</span>) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(∀ <span class="id" title="var">Q</span>, ▷ (▷ <span class="id" title="var">Q</span> ={↑<span class="id" title="var">NllftUsr</span>}=∗ ▷ <span class="id" title="var">P</span>) ∗ ▷ <span class="id" title="var">Q</span> ={↑<span class="id" title="var">Nllft</span>}=∗ (&amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">Q</span>) ∗ @[<span class="id" title="var">κ'</span>]).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_acc</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ @[<span class="id" title="var">κ</span>] -∗ |={<span class="id" title="var">E</span>}=&gt; (▷ <span class="id" title="var">P</span>) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(∀ <span class="id" title="var">Q</span>, ▷ (▷ <span class="id" title="var">Q</span> ∗ [†<span class="id" title="var">κ</span>] ={↑<span class="id" title="var">NllftUsr</span>}=∗ ▷ <span class="id" title="var">P</span>) ∗ ▷ <span class="id" title="var">Q</span> ={↑<span class="id" title="var">Nllft</span>}=∗ (&amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">Q</span>) ∗ @[<span class="id" title="var">κ</span>]).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_acc_atomic</span> <span class="id" title="var">P</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ |={↑<span class="id" title="var">Nllft</span>, ∅}=&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(▷ <span class="id" title="var">P</span> ∗ (∀ <span class="id" title="var">Q</span>, ▷ (▷ <span class="id" title="var">Q</span> ∗ [†<span class="id" title="var">κ</span>] ={↑<span class="id" title="var">NllftUsr</span>}=∗ ▷ <span class="id" title="var">P</span>) -∗ ▷ <span class="id" title="var">Q</span> ={∅, ↑<span class="id" title="var">Nllft</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">Q</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∨ ([†<span class="id" title="var">κ</span>] ∗ (|={∅, ↑<span class="id" title="var">Nllft</span>}=&gt; <span class="id" title="var">True</span>)).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_idx_acc</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">κ</span> <span class="id" title="var">idx</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>, <span class="id" title="var">idx</span>} <span class="id" title="var">P</span> -∗ <span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">idx</span> -∗ @[<span class="id" title="var">κ</span>] -∗ |={<span class="id" title="var">E</span>}=&gt; (▷ <span class="id" title="var">P</span>) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(▷ <span class="id" title="var">P</span> ={↑<span class="id" title="var">Nllft</span>}=∗ <span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">idx</span> ∗ @[<span class="id" title="var">κ</span>]).<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_borrow</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ ▷ <span class="id" title="var">P</span> -∗ |={<span class="id" title="var">E</span>}=&gt; &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> ∗ ([†<span class="id" title="var">κ</span>] ={↑<span class="id" title="var">Nllft</span>}=∗ ▷ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_sep_split</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} (<span class="id" title="var">P</span> ∗ <span class="id" title="var">Q</span>) ={<span class="id" title="var">E</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> ∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_sep_join</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">Q</span> ={<span class="id" title="var">E</span>}=∗ &amp;{<span class="id" title="var">κ</span>} (<span class="id" title="var">P</span> ∗ <span class="id" title="var">Q</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_idx_bor_unnest</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">idx</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>, <span class="id" title="var">idx</span>} <span class="id" title="var">P</span> -∗ &amp;{<span class="id" title="var">κ'</span>} (<span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">idx</span>) -∗ |={<span class="id" title="var">E</span>}=&gt; &amp;{<span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span>} <span class="id" title="var">P</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_fake</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ [†<span class="id" title="var">κ</span>] ={<span class="id" title="var">E</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span>.<br/>
+ 
+<br/>
+</div>
+
+<div class="doc">
+Indexed borrows and guards 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_idx_bor_guard'</span> <span class="id" title="var">κ</span> <span class="id" title="var">i</span> <span class="id" title="var">P</span> <span class="id" title="var">G</span> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{ <span class="id" title="var">κ</span>, <span class="id" title="var">i</span> } <span class="id" title="var">P</span> -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">G</span> &amp;&amp;{↑<span class="id" title="var">NllftG</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; @[<span class="id" title="var">κ</span>]) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">G</span> &amp;&amp;{↑<span class="id" title="var">NllftG</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">i</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">G</span> &amp;&amp;{↑<span class="id" title="var">NllftG</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (@[<span class="id" title="var">κ</span>] ∗ ▷ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_idx_bor_guard</span> <span class="id" title="var">κ</span> <span class="id" title="var">i</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{ <span class="id" title="var">κ</span>, <span class="id" title="var">i</span> } <span class="id" title="var">P</span> -∗ (@[<span class="id" title="var">κ</span>] ∗ &amp;{ <span class="id" title="var">κ</span>, <span class="id" title="var">i</span> } <span class="id" title="var">P</span> ∗ <span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">i</span>) &amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt; (@[<span class="id" title="var">κ</span>] ∗ ▷ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_idx_bor_iff</span> <span class="id" title="var">κ</span> <span class="id" title="var">i</span> <span class="id" title="var">P</span> <span class="id" title="var">P'</span> : ▷ □ (<span class="id" title="var">P</span> ↔ <span class="id" title="var">P'</span>) -∗ &amp;{<span class="id" title="var">κ</span>,<span class="id" title="var">i</span>}<span class="id" title="var">P</span> -∗ &amp;{<span class="id" title="var">κ</span>,<span class="id" title="var">i</span>}<span class="id" title="var">P'</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Derived rules about full borrows (all derived from the above, without using the model) 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_shorten</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ'</span> ⊑ <span class="id" title="var">κ</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ &amp;{<span class="id" title="var">κ'</span>} <span class="id" title="var">P</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_reborrow</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ <span class="id" title="var">κ'</span> ⊑ <span class="id" title="var">κ</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ |={<span class="id" title="var">E</span>}=&gt; &amp;{<span class="id" title="var">κ'</span>} <span class="id" title="var">P</span> ∗ ([†<span class="id" title="var">κ'</span>] ={↑<span class="id" title="var">Nllft</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_freeze</span> `{!<span class="id" title="var">Inhabited</span> <span class="id" title="var">T</span>} <span class="id" title="var">E</span> <span class="id" title="var">κ</span> (<span class="id" title="var">P</span> : <span class="id" title="var">T</span> → <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} (∃ (<span class="id" title="var">x</span>: <span class="id" title="var">T</span>) , <span class="id" title="var">P</span> <span class="id" title="var">x</span>) ={<span class="id" title="var">E</span>}=∗ ∃ (<span class="id" title="var">x</span>: <span class="id" title="var">T</span>), &amp;{<span class="id" title="var">κ</span>} (<span class="id" title="var">P</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_pers_from_wand</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> (<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">Q</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ (<span class="id" title="var">P</span> -∗ <span class="id" title="var">Q</span>) ={<span class="id" title="var">E</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> ∗ ((▷ <span class="id" title="var">Q</span>) ∨ [†<span class="id" title="var">κ</span>]).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_pers_from_wand2</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> (<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">Q</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ (<span class="id" title="var">R</span> -∗ <span class="id" title="var">P</span> -∗ <span class="id" title="var">Q</span>) -∗ <span class="id" title="var">R</span> ={<span class="id" title="var">E</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> ∗ ((▷ <span class="id" title="var">Q</span>) ∨ [†<span class="id" title="var">κ</span>]) ∗ <span class="id" title="var">R</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_pers</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> (<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">P</span>):<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> ∗ ((▷ <span class="id" title="var">P</span>) ∨ [†<span class="id" title="var">κ</span>]).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_unnest</span> <span class="id" title="var">E</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ'</span>} (&amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span>) -∗ |={<span class="id" title="var">E</span>}▷=&gt; &amp;{<span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span>} <span class="id" title="var">P</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_iff</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> <span class="id" title="var">P'</span> : ▷ □ (<span class="id" title="var">P</span> ↔ <span class="id" title="var">P'</span>) -∗ &amp;{<span class="id" title="var">κ</span>}<span class="id" title="var">P</span> -∗ &amp;{<span class="id" title="var">κ</span>}<span class="id" title="var">P'</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_simple_atomic</span> <span class="id" title="var">P</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗ |={↑<span class="id" title="var">Nllft</span>, ∅}=&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(▷ <span class="id" title="var">P</span> ∗ (▷ <span class="id" title="var">P</span> ={∅, ↑<span class="id" title="var">Nllft</span>}=∗ &amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∨ ([†<span class="id" title="var">κ</span>] ∗ (|={∅, ↑<span class="id" title="var">Nllft</span>}=&gt; <span class="id" title="var">True</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Guarded accessors 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_idx_acc_guarded</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">E</span> <span class="id" title="var">G</span> <span class="id" title="var">κ</span> <span class="id" title="var">idx</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Timeless</span> <span class="id" title="var">G</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&amp;{<span class="id" title="var">κ</span>, <span class="id" title="var">idx</span>} <span class="id" title="var">P</span> -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">idx</span> -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">G</span> &amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt; @[<span class="id" title="var">κ</span>]) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">G</span> ={<span class="id" title="var">E</span>}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(▷ <span class="id" title="var">P</span>) ∗ (▷ <span class="id" title="var">P</span> ={↑<span class="id" title="var">Nllft</span>}=∗ <span class="id" title="var">idx_bor_tok</span> <span class="id" title="var">idx</span> ∗ <span class="id" title="var">G</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_bor_acc_guarded</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">E</span> <span class="id" title="var">G</span> <span class="id" title="var">κ</span> <span class="id" title="var">P</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Timeless</span> <span class="id" title="var">G</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">P</span> -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">G</span> &amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt; @[<span class="id" title="var">κ</span>]) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">G</span> ={<span class="id" title="var">E</span>}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(▷ <span class="id" title="var">P</span>) ∗ (∀ <span class="id" title="var">Q</span>, ▷ (▷ <span class="id" title="var">Q</span> ={↑<span class="id" title="var">NllftUsr</span>}=∗ ▷ <span class="id" title="var">P</span>) ∗ ▷ <span class="id" title="var">Q</span> ={↑<span class="id" title="var">Nllft</span>}=∗ (&amp;{<span class="id" title="var">κ</span>} <span class="id" title="var">Q</span>) ∗ <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">LlftLogic</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Initializing the <span class="inlinecode"><span class="id" title="var">llft_ctx</span></span> 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llft_alloc</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>} `{!<span class="id" title="var">llft_logicGpreS</span> <span class="id" title="var">Σ</span>} `{!<span class="id" title="var">invGS</span> <span class="id" title="var">Σ</span>} <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;: £1 ⊢ |={<span class="id" title="var">E</span>}=&gt; ∃ <span class="id" title="var">_</span> : <span class="id" title="var">llft_logicGS</span> <span class="id" title="var">Σ</span>, <span class="id" title="var">llft_ctx</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;@[ κ ]" := (<span class="id" title="var">llft_alive</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "@[ κ ]") : <span class="id" title="var">bi_scope</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;[† κ ]" := (<span class="id" title="var">llft_dead</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "[† κ ]") : <span class="id" title="var">bi_scope</span>.<br/>
+<span class="id" title="keyword">Infix</span> &quot;⊑" := <span class="id" title="var">llft_incl</span> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70) : <span class="id" title="var">bi_scope</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;&amp;{ κ }" := (<span class="id" title="var">full_bor</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "&amp;{ κ }") : <span class="id" title="var">bi_scope</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;&amp;{ κ , i }" := (<span class="id" title="var">idx_bor</span> <span class="id" title="var">κ</span> <span class="id" title="var">i</span>) (<span class="id" title="var">format</span> "&amp;{ κ , i }") : <span class="id" title="var">bi_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+One difference between the Leaf Lifetime Logic and the classic RustBelt lifetime logic
+is that our tokens aren't fractional. This might seem limiting, for example, because
+rules like <span class="inlinecode"><span class="id" title="var">llftl_bor_acc</span></span> require relinquishing the entire lifetime token <span class="inlinecode">@[<span class="id" title="var">κ</span>]</span>,
+whereas in the classic lifetime logic you could instead relinquish an arbitrary fraction of it.
+
+<div class="paragraph"> </div>
+
+Is it possible to use <span class="inlinecode"><span class="id" title="var">llftl_bor_acc</span></span> in a more fine-grained way in the Leaf Lifetime Logic?
+It is, if you combine it with other guarding capabilities.
+
+<div class="paragraph"> </div>
+
+For example, here's one thing you could do, demonstrated by <span class="inlinecode"><span class="id" title="var">llftl_split_token</span></span>:
+
+<div class="paragraph"> </div>
+
+  1. Use Leaf to split a lifetime token <span class="inlinecode">@[<span class="id" title="var">κ</span>]</span> into two half tokens, <span class="inlinecode">(1/2)@[<span class="id" title="var">k</span>]</span>, where:
+
+<div class="paragraph"> </div>
+
+      <span class="inlinecode">(1/2)@[<span class="id" title="var">κ</span>]</span> <span class="inlinecode">&amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt;</span> <span class="inlinecode">@[<span class="id" title="var">κ</span>]</span>
+
+<div class="paragraph"> </div>
+
+  2. Create fresh lifetimes κ1 and κ2. Use <span class="inlinecode"><span class="id" title="var">llftl_borrow_shared</span></span> on these half tokens with
+     these fresh lifetimes.
+
+<div class="paragraph"> </div>
+
+      <span class="inlinecode">@[<span class="id" title="var">κ1</span>]</span> <span class="inlinecode">&amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt;</span> <span class="inlinecode">(1/2)@[<span class="id" title="var">κ</span>]</span>
+
+<div class="paragraph"> </div>
+
+      <span class="inlinecode">@[<span class="id" title="var">κ2</span>]</span> <span class="inlinecode">&amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt;</span> <span class="inlinecode">(1/2)@[<span class="id" title="var">κ</span>]</span>
+
+<div class="paragraph"> </div>
+
+  3. Using transitivity, we can establish <span class="inlinecode">@[<span class="id" title="var">κ1</span>]</span> <span class="inlinecode">&amp;&amp;{↑<span class="id" title="var">NllftG</span>}&amp;&amp;&gt;</span> <span class="inlinecode">@[<span class="id" title="var">κ</span>]</span>, i.e.,
+     <span class="inlinecode"><span class="id" title="var">κ1</span></span> <span class="inlinecode">⊑</span> <span class="inlinecode"><span class="id" title="var">κ</span></span>. Likewise, we can get <span class="inlinecode"><span class="id" title="var">κ2</span></span> <span class="inlinecode">⊑</span> <span class="inlinecode"><span class="id" title="var">κ</span></span>.
+
+<div class="paragraph"> </div>
+
+  Now if we want to use <span class="inlinecode"><span class="id" title="var">llftl_bor_acc</span></span>, we can use the <span class="inlinecode">@[<span class="id" title="var">κ1</span>]</span> and <span class="inlinecode">@[<span class="id" title="var">κ2</span>]</span> tokens in place
+  of <span class="inlinecode">@[<span class="id" title="var">κ</span>]</span>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_split_token</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>} `{!<span class="id" title="var">llft_logicGS</span> <span class="id" title="var">Σ</span>} `{!<span class="id" title="var">invGS</span> <span class="id" title="var">Σ</span>} `{!<span class="id" title="var">frac_logicG</span> <span class="id" title="var">Σ</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">E</span> <span class="id" title="var">κ</span> :<br/>
+&nbsp;&nbsp;↑<span class="id" title="var">Nllft</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> -∗<br/>
+&nbsp;&nbsp;@[<span class="id" title="var">κ</span>] ={<span class="id" title="var">E</span>}=∗ ∃ <span class="id" title="var">κ1</span> <span class="id" title="var">κ2</span> ,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ1</span> ⊑ <span class="id" title="var">κ</span> ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ2</span> ⊑ <span class="id" title="var">κ</span> ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[<span class="id" title="var">κ1</span>] ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[<span class="id" title="var">κ2</span>] ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;□ (@[ <span class="id" title="var">κ1</span> ] ={↑<span class="id" title="var">Nllft</span>}[∅]▷=∗ [† <span class="id" title="var">κ1</span> ]) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;□ (@[ <span class="id" title="var">κ2</span> ] ={↑<span class="id" title="var">Nllft</span>}[∅]▷=∗ [† <span class="id" title="var">κ2</span> ]) ∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;([†<span class="id" title="var">κ1</span>] ∗ [†<span class="id" title="var">κ2</span>] ={<span class="id" title="var">E</span>}=∗ @[<span class="id" title="var">κ</span>])<br/>
+&nbsp;&nbsp;.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

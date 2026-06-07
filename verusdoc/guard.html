@@ -1,0 +1,539 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>guard</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library guard</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Guard</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>}.<br/>
+<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">invGS_gen</span> <span class="id" title="var">hlc</span> <span class="id" title="var">Σ</span>}.<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Definition of <span class="inlinecode"><span class="id" title="var">guards</span></span> and the notation.
+<span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">&amp;&amp;{</span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">}&amp;&amp;&gt;</span> <span class="inlinecode"><span class="id" title="var">Q</span></span> is the guards arrow; <span class="inlinecode"><span class="id" title="var">E</span></span> is the "mask".
+The "later count" can be provided with a semicolon as in <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">&amp;&amp;{</span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">;</span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">}&amp;&amp;&gt;</span> <span class="inlinecode"><span class="id" title="var">Q</span></span>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">guards</span> (<span class="id" title="var">n</span>: <span class="id" title="var">nat</span>) (<span class="id" title="var">E</span>: <span class="id" title="var">coPset</span>) (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;P &amp;&amp;{ E }&amp;&amp;&gt; Q" := (<span class="id" title="var">guards</span> 0 <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 99, <span class="id" title="var">E</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="var">Q</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 200).<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;P &amp;&amp;{ E ; n }&amp;&amp;&gt; Q" := (<span class="id" title="var">guards</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 99, <span class="id" title="var">E</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="var">Q</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 200).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Global instances for guards.
+<span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">&amp;&amp;{</span> <span class="inlinecode"><span class="id" title="var">E</span>;</span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">}&amp;&amp;&gt;</span> <span class="inlinecode"><span class="id" title="var">Q</span></span> is persisent. It is proper in both its arguments,
+and it is nonexpansive in both its arguments.
+Also, when <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">≥</span> <span class="inlinecode">0</span>, it is contractive in the right-hand side.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">guards_proper</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Proper</span> ((≡) ==&gt; (≡) ==&gt; (≡)) (<span class="id" title="var">guards</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">guards_persistent</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Persistent</span> (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">guards_nonexpansive2</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">NonExpansive2</span> (<span class="id" title="var">guards</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">guards_contractive_right_if_n_ge_1</span> <span class="id" title="var">P</span> <span class="id" title="var">E</span> <span class="id" title="var">n</span> (<span class="id" title="var">n_ge_1</span>: <span class="id" title="var">n</span> ≥ 1) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Contractive</span> (<span class="id" title="var">guards</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Reflexivity. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_refl</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> : ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">P</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Transitivity. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_transitive_additive</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">Q</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> + <span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_transitive_left</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">Q</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_transitive_right</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">Q</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_transitive</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">Q</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Weakening 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_mask</span> <span class="id" title="var">E</span> <span class="id" title="var">E'</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">is_subset</span>: <span class="id" title="var">E</span> ⊆ <span class="id" title="var">E'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) ⊢ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E'</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lguards_weaken_later</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">n</span> ≤ <span class="id" title="var">m</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) ⊢ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_sep_l</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">n</span> : ⊢ (<span class="id" title="var">P</span> ∗ <span class="id" title="var">Q</span>) &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_sep_r</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">n</span> : ⊢ (<span class="id" title="var">P</span> ∗ <span class="id" title="var">Q</span>) &amp;&amp;{ <span class="id" title="var">E</span>; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_rhs_sep_l</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">R</span>))%<span class="id" title="var">I</span> ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_rhs_sep_r</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">R</span>))%<span class="id" title="var">I</span> ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_lhs_sep_l</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>)%<span class="id" title="var">I</span> ⊢ (<span class="id" title="var">P</span> ∗ <span class="id" title="var">R</span>) &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_lhs_sep_r</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>)%<span class="id" title="var">I</span> ⊢ (<span class="id" title="var">R</span> ∗ <span class="id" title="var">P</span>) &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_true</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> : ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">True</span>.<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_false</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> : ⊢ <span class="id" title="var">False</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">P</span>.<br/>
+</div>
+
+<div class="doc">
+<i>Opening guards</i>.
+
+<div class="paragraph"> </div>
+
+Opening a guard (<span class="inlinecode"><span class="id" title="var">guards_open</span></span>) is a lot like opening an invariant;
+it decreases the current mask
+and gives you a view-shift wand to close it back up again.
+
+<div class="paragraph"> </div>
+
+<span class="inlinecode"><span class="id" title="var">guards_upd</span></span> is what you get if you use <span class="inlinecode"><span class="id" title="var">guards_open</span></span>, apply some update, and close
+it back up again. This lemma is meant to capture the intuition that a guard
+<span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">&amp;&amp;{<span class="id" title="var">_</span>}&amp;&amp;&gt;</span> <span class="inlinecode"><span class="id" title="var">Q</span></span> let you "use <span class="inlinecode"><span class="id" title="var">P</span></span> as a read-only <span class="inlinecode"><span class="id" title="var">Q</span></span>". In most cases, though, it's
+probably easier to use <span class="inlinecode"><span class="id" title="var">guards_open</span></span> directly.
+
+<div class="paragraph"> </div>
+
+<span class="inlinecode"><span class="id" title="var">guards_open_two_simultaneously</span></span> is a quirky operation needed to construct storage protocols;
+it helps you when you'd otherwise have a mask conflict.  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_open_later</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">coPset</span>) <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>, <span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▷^<span class="id" title="var">n</span> |={<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>}=&gt; (<span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> ={<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=∗ <span class="id" title="var">P</span>)).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_open</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">coPset</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>, <span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>}=∗ <span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> ={<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=∗ <span class="id" title="var">P</span>).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_upd_later</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">disj</span>: <span class="id" title="var">E</span> ## <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">F</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Q</span> ∗ <span class="id" title="var">X</span> ={<span class="id" title="var">E</span>}=∗ <span class="id" title="var">Q</span> ∗ <span class="id" title="var">Y</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> ∗ <span class="id" title="var">X</span> ={<span class="id" title="var">E</span> ∪ <span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=∗ ▷^<span class="id" title="var">n</span> (|={<span class="id" title="var">E</span>, <span class="id" title="var">E</span> ∪ <span class="id" title="var">F</span>}=&gt; <span class="id" title="var">P</span> ∗ <span class="id" title="var">Y</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_upd</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">disj</span>: <span class="id" title="var">E</span> ## <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">F</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">X</span> ={<span class="id" title="var">E</span>}=∗ <span class="id" title="var">Q</span> ∗ <span class="id" title="var">Y</span>) -∗ (<span class="id" title="var">P</span> ∗ <span class="id" title="var">X</span> ={<span class="id" title="var">E</span> ∪ <span class="id" title="var">F</span>}=∗ <span class="id" title="var">P</span> ∗ <span class="id" title="var">Y</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lguards_open_two_simultaneously</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">coPset</span>) (<span class="id" title="var">n</span>: <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>, <span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>}=∗ (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">T</span>, <span class="id" title="var">T</span> ∗ (<span class="id" title="var">T</span> -∗ ▷^<span class="id" title="var">n</span> ◇ (<span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">T</span>))) ∗ (<span class="id" title="var">T</span> -∗ ▷^<span class="id" title="var">n</span> ◇ (<span class="id" title="var">R</span> ∗ (<span class="id" title="var">R</span> -∗ <span class="id" title="var">T</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ (<span class="id" title="var">T</span> ={<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=∗ <span class="id" title="var">P</span>)).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_open_two_simultaneously</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">coPset</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>, <span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>}=∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∃ <span class="id" title="var">T</span>, <span class="id" title="var">T</span> ∗ (<span class="id" title="var">T</span> -∗ ◇ (<span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">T</span>))) ∗ (<span class="id" title="var">T</span> -∗ ◇ (<span class="id" title="var">R</span> ∗ (<span class="id" title="var">R</span> -∗ <span class="id" title="var">T</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∗ (<span class="id" title="var">T</span> ={<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=∗ <span class="id" title="var">P</span>).<br/>
+ 
+<br/>
+</div>
+
+<div class="doc">
+More general variants of sep-weakening 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lguards_weaken_except0</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">n</span> <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;: □(<span class="id" title="var">P</span> -∗ ▷^<span class="id" title="var">n</span> ◇ (<span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">P</span>))) ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lguards_equiv_except0</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">n</span> <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;: □(<span class="id" title="var">P</span> -∗ ▷^<span class="id" title="var">n</span> ◇ <span class="id" title="var">Q</span>) ∗ □(<span class="id" title="var">Q</span> -∗ <span class="id" title="var">P</span>) ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lguards_weaken</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">n</span> <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;: □(<span class="id" title="var">P</span> -∗ ▷^<span class="id" title="var">n</span> (<span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">P</span>))) ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;: □(<span class="id" title="var">P</span> -∗ (<span class="id" title="var">Q</span> ∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">P</span>))) ⊢ <span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; 0 }&amp;&amp;&gt; <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Guarding and laters 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_later_add_1</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;: ⊢ (▷ <span class="id" title="var">P</span>) &amp;&amp;{<span class="id" title="var">E</span> ; 1}&amp;&amp;&gt; <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_later_add_n</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: ⊢ (▷^<span class="id" title="var">n</span> <span class="id" title="var">P</span>) &amp;&amp;{<span class="id" title="var">E</span> ; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_remove_later_or_r</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">tl</span>: <span class="id" title="var">Timeless</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">Q</span> ∨ ▷ <span class="id" title="var">P</span>) &amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span> ∨ <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_remove_later</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">tl</span>: <span class="id" title="var">Timeless</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (▷ <span class="id" title="var">P</span>) &amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt; <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_remove_later_rhs</span> (<span class="id" title="var">X</span> <span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">tl</span>: <span class="id" title="var">Timeless</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">X</span> &amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt; ▷ <span class="id" title="var">P</span>) ⊢ (<span class="id" title="var">X</span> &amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt; <span class="id" title="var">P</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lguards0_eq_guards</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> : (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; 0 }&amp;&amp;&gt; <span class="id" title="var">Q</span>) ⊣⊢ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_later_absorb_n</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; (▷^<span class="id" title="var">m</span> <span class="id" title="var">Q</span>)) ⊢ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span>+<span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_later_absorb_1</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">n</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; (▷ <span class="id" title="var">Q</span>)) ⊢ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span>+1 }&amp;&amp;&gt; <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Extracting persistent propositions from guards. Really, these just follow from
+<span class="inlinecode"><span class="id" title="var">guards_open</span></span> and <span class="inlinecode"><span class="id" title="var">guards_open_later</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_extract_persistent_later</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span> ; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ <span class="id" title="var">P</span> -∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">R</span>) ={<span class="id" title="var">E</span>,<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>}=∗ ▷^<span class="id" title="var">n</span> (|={<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>,<span class="id" title="var">E</span>}=&gt; <span class="id" title="var">P</span> ∗ <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_extract_persistent</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ <span class="id" title="var">P</span> -∗ (<span class="id" title="var">Q</span> -∗ <span class="id" title="var">R</span>) ={<span class="id" title="var">E</span>}=∗ <span class="id" title="var">P</span> ∗ <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_extract_persistent2_later</span> (<span class="id" title="var">X</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span> ; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ <span class="id" title="var">X</span> -∗ <span class="id" title="var">P</span> -∗ (<span class="id" title="var">X</span> ∗ <span class="id" title="var">Q</span> -∗ <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;={<span class="id" title="var">E</span>, <span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>}=∗ ▷^<span class="id" title="var">n</span> (|={<span class="id" title="var">E</span> ∖ <span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=&gt; <span class="id" title="var">X</span> ∗ <span class="id" title="var">P</span> ∗ <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_extract_persistent2</span> (<span class="id" title="var">X</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">su</span>: <span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ <span class="id" title="var">X</span> -∗ <span class="id" title="var">P</span> -∗ (<span class="id" title="var">X</span> ∗ <span class="id" title="var">Q</span> -∗ <span class="id" title="var">R</span>) ={<span class="id" title="var">E</span>}=∗ <span class="id" title="var">X</span> ∗ <span class="id" title="var">P</span> ∗ <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">unguard_pers_later</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">G</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">C</span>) <span class="id" title="var">E</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;(<span class="id" title="var">hyp</span>: <span class="id" title="var">A</span> ∗ <span class="id" title="var">B</span> ⊢ <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">G</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">A</span>) -∗ <span class="id" title="var">G</span> -∗ <span class="id" title="var">B</span> ={<span class="id" title="var">E</span>,∅}=∗ ▷^<span class="id" title="var">n</span> |={∅,<span class="id" title="var">E</span>}=&gt; <span class="id" title="var">G</span> ∗ (<span class="id" title="var">G</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">A</span>) ∗ <span class="id" title="var">B</span> ∗ <span class="id" title="var">C</span>.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">unguard_pers</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">G</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">C</span>) <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;(<span class="id" title="var">hyp</span>: <span class="id" title="var">A</span> ∗ <span class="id" title="var">B</span> ⊢ <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">G</span> &amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt; <span class="id" title="var">A</span>) -∗ <span class="id" title="var">G</span> -∗ <span class="id" title="var">B</span> ={<span class="id" title="var">E</span>}=∗ <span class="id" title="var">G</span> ∗ (<span class="id" title="var">G</span> &amp;&amp;{<span class="id" title="var">E</span>}&amp;&amp;&gt; <span class="id" title="var">A</span>) ∗ <span class="id" title="var">B</span> ∗ <span class="id" title="var">C</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Moving persistent propositions into guards. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_include_pers</span> (<span class="id" title="var">P</span> <span class="id" title="var">X</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">P</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">P</span> -∗ (<span class="id" title="var">X</span> &amp;&amp;{ <span class="id" title="var">F</span>; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">X</span> &amp;&amp;{ <span class="id" title="var">F</span>; <span class="id" title="var">n</span> }&amp;&amp;&gt; (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">P</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_include_pers_simple</span> (<span class="id" title="var">C</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">per</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">C</span> ⊢ (<span class="id" title="var">True</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">C</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Conjunction and factoring 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_point</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">point</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p_entails_q</span>: <span class="id" title="var">P</span> ⊢ <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_weaken_rhs_point</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">S</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">point</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">qrx</span>: (<span class="id" title="var">Q</span> ⊢ <span class="id" title="var">S</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_and_point</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">S</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">point</span>: <span class="id" title="var">point_prop</span> <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">qrx</span>: (<span class="id" title="var">Q</span> ∧ <span class="id" title="var">R</span> ⊢ <span class="id" title="var">S</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_and_own</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) {<span class="id" title="var">A</span>} `{<span class="id" title="var">ing</span> : <span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> <span class="id" title="var">A</span>} <span class="id" title="var">γ</span> (<span class="id" title="var">x</span>: <span class="id" title="var">A</span>) <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">qrx</span>: (<span class="id" title="var">Q</span> ∧ <span class="id" title="var">R</span> ⊢ <span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span> ; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span> ; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span> ; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_and_own_sep_union</span> (<span class="id" title="var">P1</span> <span class="id" title="var">P2</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) {<span class="id" title="var">A</span>} `{<span class="id" title="var">ing</span> : <span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> <span class="id" title="var">A</span>} <span class="id" title="var">γ</span> (<span class="id" title="var">x</span>: <span class="id" title="var">A</span>) <span class="id" title="var">F1</span> <span class="id" title="var">F2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">qrx</span>: (<span class="id" title="var">Q</span> ∧ <span class="id" title="var">R</span> ⊢ <span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P1</span> &amp;&amp;{<span class="id" title="var">F1</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P2</span> &amp;&amp;{<span class="id" title="var">F2</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P1</span> ∗ <span class="id" title="var">P2</span> &amp;&amp;{<span class="id" title="var">F1</span> ∪ <span class="id" title="var">F2</span>}&amp;&amp;&gt; <span class="id" title="var">own</span> <span class="id" title="var">γ</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_and_pers</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">S</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">S</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;□ (<span class="id" title="var">Q</span> ∧ <span class="id" title="var">R</span> -∗ <span class="id" title="var">S</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>;<span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>;<span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">P</span> ={<span class="id" title="var">E</span>, <span class="id" title="var">E</span>∖<span class="id" title="var">F</span>}=∗ ▷^<span class="id" title="var">n</span> |={<span class="id" title="var">E</span>∖<span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=&gt; <span class="id" title="var">P</span> ∗ <span class="id" title="var">S</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_and_pers_with_excl</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">S</span> <span class="id" title="var">T</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">S</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">F</span> ⊆ <span class="id" title="var">E</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;□ ((<span class="id" title="var">Q</span> ∧ <span class="id" title="var">R</span>) ∗ <span class="id" title="var">T</span> -∗ <span class="id" title="var">S</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>;<span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>;<span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">P</span> -∗ <span class="id" title="var">T</span> ={<span class="id" title="var">E</span>, <span class="id" title="var">E</span>∖<span class="id" title="var">F</span>}=∗ ▷^<span class="id" title="var">n</span> |={<span class="id" title="var">E</span>∖<span class="id" title="var">F</span>, <span class="id" title="var">E</span>}=&gt; <span class="id" title="var">P</span> ∗ <span class="id" title="var">T</span> ∗ <span class="id" title="var">S</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Guarding and disjunction 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_strengthen_exists</span> <span class="id" title="var">X</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">S</span> <span class="id" title="var">R</span> : <span class="id" title="var">X</span> → <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pr_impl_s</span>: (∀ <span class="id" title="var">x</span>, <span class="id" title="var">Q</span> ∧ <span class="id" title="var">R</span> <span class="id" title="var">x</span> ⊢ <span class="id" title="var">S</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: ∀ <span class="id" title="var">x</span>, <span class="id" title="var">Persistent</span> (<span class="id" title="var">S</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (∃ (<span class="id" title="var">x</span>: <span class="id" title="var">X</span>), <span class="id" title="var">R</span> <span class="id" title="var">x</span>)) -∗<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (∃ (<span class="id" title="var">x</span>: <span class="id" title="var">X</span>), <span class="id" title="var">R</span> <span class="id" title="var">x</span> ∗ <span class="id" title="var">S</span> <span class="id" title="var">x</span>)).<br/>
+ 
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_strengthen_exists_with_lhs</span> <span class="id" title="var">X</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">S</span> <span class="id" title="var">R</span> : <span class="id" title="var">X</span> → <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pr_impl_s</span>: (∀ <span class="id" title="var">x</span>, <span class="id" title="var">P</span> ∧ <span class="id" title="var">R</span> <span class="id" title="var">x</span> ⊢ <span class="id" title="var">S</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: ∀ <span class="id" title="var">x</span>, <span class="id" title="var">Persistent</span> (<span class="id" title="var">S</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (∃ (<span class="id" title="var">x</span>: <span class="id" title="var">X</span>), <span class="id" title="var">R</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (∃ (<span class="id" title="var">x</span>: <span class="id" title="var">X</span>), <span class="id" title="var">R</span> <span class="id" title="var">x</span> ∗ <span class="id" title="var">S</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_cancel_or</span> (<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> <span class="id" title="var">S</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">F1</span> <span class="id" title="var">F2</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">qrx</span>: (<span class="id" title="var">Q</span> ∧ <span class="id" title="var">R</span> ⊢ <span class="id" title="var">False</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F1</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) ∗ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F2</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (<span class="id" title="var">R</span> ∨ <span class="id" title="var">S</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F1</span> ∪ <span class="id" title="var">F2</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_cancel_or_with_lhs</span> (<span class="id" title="var">P</span> <span class="id" title="var">R</span> <span class="id" title="var">S</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">F</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pr_impl_false</span>: (<span class="id" title="var">P</span> ∧ <span class="id" title="var">R</span> ⊢ <span class="id" title="var">False</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (<span class="id" title="var">R</span> ∨ <span class="id" title="var">S</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">F</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_cancel_or_by_chaining_additive</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">S</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span> ∨ <span class="id" title="var">S</span>) -∗ (<span class="id" title="var">Q</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">False</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> ; <span class="id" title="var">n</span> + <span class="id" title="var">m</span> }&amp;&amp;&gt; <span class="id" title="var">S</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_cancel_or_by_chaining</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">S</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span> ∨ <span class="id" title="var">S</span>) -∗ (<span class="id" title="var">Q</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">False</span>) -∗ (<span class="id" title="var">P</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; <span class="id" title="var">S</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+More lemmas about persistent props 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_pers_lhs_to_rhs</span> <span class="id" title="var">E</span> <span class="id" title="var">n</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> ⊢ <span class="id" title="var">R</span>) →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) ⊢ (<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">R</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_pers_lhs_and_rhs</span> <span class="id" title="var">E</span> <span class="id" title="var">n</span> <span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pers</span>: <span class="id" title="var">Persistent</span> <span class="id" title="var">R</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; <span class="id" title="var">Q</span>) ⊢ ((<span class="id" title="var">P</span> ∗ <span class="id" title="var">R</span>) &amp;&amp;{<span class="id" title="var">E</span>; <span class="id" title="var">n</span>}&amp;&amp;&gt; (<span class="id" title="var">Q</span> ∗ <span class="id" title="var">R</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The relationship between guarding and invariants 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_from_ownI</span> (<span class="id" title="var">P</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) <span class="id" title="var">i</span> <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">i_in_e</span>: <span class="id" title="var">i</span> ∈ <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ownI</span> <span class="id" title="var">i</span> <span class="id" title="var">P</span> ⊢ <span class="id" title="var">True</span> &amp;&amp;{ <span class="id" title="var">E</span> }&amp;&amp;&gt; (▷ <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">inv_from_guards</span> (<span class="id" title="var">P</span>: <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) (<span class="id" title="var">N</span>: <span class="id" title="var">namespace</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">True</span> &amp;&amp;{ ↑<span class="id" title="var">N</span> }&amp;&amp;&gt; (▷ <span class="id" title="var">P</span>)) ⊢ <span class="id" title="var">inv</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_alloc</span> <span class="id" title="var">E</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> : ▷ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ (<span class="id" title="var">True</span> &amp;&amp;{↑<span class="id" title="var">N</span>}&amp;&amp;&gt; ▷ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_alloc_with_inv</span> <span class="id" title="var">N</span> <span class="id" title="var">E</span> <span class="id" title="var">P</span> : ▷ <span class="id" title="var">P</span> ={<span class="id" title="var">E</span>}=∗ <span class="id" title="var">inv</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> ∗ (<span class="id" title="var">True</span> &amp;&amp;{↑<span class="id" title="var">N</span>}&amp;&amp;&gt; ▷ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">guards_true_sep_mask_disjoint</span> <span class="id" title="var">E1</span> <span class="id" title="var">E2</span> <span class="id" title="var">n</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <br/>
+&nbsp;&nbsp;(<span class="id" title="var">E1</span> ## <span class="id" title="var">E2</span>) →<br/>
+&nbsp;&nbsp;(<span class="id" title="var">True</span> &amp;&amp;{ <span class="id" title="var">E1</span>; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span>) -∗ (<span class="id" title="var">True</span> &amp;&amp;{ <span class="id" title="var">E2</span>; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">R</span>) -∗ (<span class="id" title="var">True</span> &amp;&amp;{ <span class="id" title="var">E1</span> ∪ <span class="id" title="var">E2</span>; <span class="id" title="var">n</span> }&amp;&amp;&gt; <span class="id" title="var">Q</span> ∗ <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Guard</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

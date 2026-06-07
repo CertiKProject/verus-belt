@@ -1,0 +1,145 @@
+From lrust.lang Require Export proofmode notation.
+From lrust.lifetime Require Import lifetime_full.
+(* Require Import guarding.lib.lifetime_internals_ra. *)
+Require Import guarding.guard.
+
+
+Definition static := llft_empty.
+Notation lft_intersect_list l := (foldr (⊓) static l).
+
+Canonical lftO := leibnizO lft.
+
+Global Instance lft_intersect_left_id : LeftId eq static meet.
+Proof. intros κ; unfold llft_intersect; set_solver. Qed.
+
+Global Instance lft_intersect_right_id : RightId eq static meet.
+Proof. intros κ; unfold llft_intersect; set_solver. Qed.
+
+Definition lft_equiv `{!invGS Σ, !llft_logicGS Σ} (κ κ':lft) : iProp Σ :=
+  κ ⊑ κ' ∗ κ' ⊑ κ.
+
+Infix "≡ₗ" := lft_equiv (at level 70) : bi_scope.
+
+Section lifetimes.
+  Context `{!invGS Σ, !llft_logicGS Σ}.
+  Implicit Type (κ: lft).
+
+  Global Instance lft_intersect_comm : Comm (A:=lft) eq (⊓). 
+  Proof. unfold meet, llft_intersect. intros ??; set_solver. Qed.
+  Global Instance lft_intersect_assoc : Assoc (A:=lft) eq (⊓). 
+  Proof. unfold meet, llft_intersect. intros ??; set_solver. Qed.
+
+  Lemma lft_incl_static κ : ⊢ κ ⊑ static.
+  Proof.
+    replace κ with (κ ⊓ static) by (unfold llft_intersect; set_solver).
+    by iApply llftl_intersect_incl_r.
+  Qed.
+  
+  Lemma static_alive_true :
+      @[static] ⊣⊢ True.
+  Proof.
+      iSplit. { iIntros. done. } iIntros. iApply llftl_tok_unit.
+  Qed.
+
+  Lemma lft_intersect_list_elem_of_incl κs κ : 
+    κ ∈ κs → ⊢ lft_intersect_list κs ⊑ κ.
+  Proof.
+    induction κs as [ | κ' κs' IH ] in κ |- *; first set_solver.
+    intros [ -> | Hin ]%elem_of_cons => /=.
+    - iApply llftl_incl_weaken_lhs_l.
+      iApply guards_refl.
+    - iApply llftl_incl_weaken_lhs_r.
+      by iApply IH.
+  Qed.
+
+  Lemma lft_intersect_list_app l1 l2 :
+    lft_intersect_list (l1 ++ l2) = lft_intersect_list l1 ⊓ lft_intersect_list l2.
+  Proof. induction l1 as [ | κ l1' IH ] in l2 |- * => /=; by [rewrite left_id_L| rewrite IH assoc_L]. Qed.
+
+  Lemma lft_incl_refl κ : ⊢ κ ⊑ κ. by iApply guards_refl. Qed.
+  
+  Lemma lft_equiv_refl κ : ⊢ lft_equiv κ κ.
+  Proof. by iSplit; iApply guards_refl. Qed.
+
+  Lemma lft_intersect_equiv_idemp κ : ⊢ κ ⊓ κ ≡ₗ κ.
+  Proof. iSplit; unfold meet, llft_intersect; replace (κ ∪ κ) with κ by set_solver; iApply lft_incl_refl. Qed.
+  
+  Lemma lft_intersect_mono : ∀ κ1 κ1' κ2 κ2',
+    κ1 ⊑ κ1' -∗ κ2 ⊑ κ2' -∗ κ1 ⊓ κ2 ⊑ κ1' ⊓ κ2'.
+  Proof.
+    iIntros (κ1 κ1' κ2 κ2') "#H1 #H2".
+    iApply (llftl_incl_glb with "[H1] [H2]").
+    - by iApply llftl_incl_weaken_lhs_l.
+    - by iApply llftl_incl_weaken_lhs_r.
+  Qed.
+
+  Lemma lft_equiv_sym κ κ' : κ ≡ₗ κ' -∗ κ' ≡ₗ κ.
+  Proof. iIntros "[??]". by iSplit. Qed.
+
+  Lemma lft_equiv_trans κ κ' κ'' : ⊢ κ ≡ₗ κ' -∗ κ' ≡ₗ κ'' -∗ κ ≡ₗ κ''.
+  Proof. 
+    iIntros "[H1 H2][H3 H4]". 
+    iSplit.
+    - iApply (llftl_incl_trans with "H1 H3").
+    - iApply (llftl_incl_trans with "H4 H2").
+  Qed.
+
+  Lemma lft_intersect_equiv_proper κ1 κ2 κ3 κ4 :
+    κ1 ≡ₗ κ3 -∗ κ2 ≡ₗ κ4 -∗ κ1 ⊓ κ2 ≡ₗ κ3 ⊓ κ4.
+  Proof. iIntros "[#H1 #H2] [#H3 #H4]". iSplit; by iApply lft_intersect_mono. Qed.
+
+  Lemma lft_incl_equiv_proper κ1 κ2 κ3 κ4 :
+    (⊢ κ1 ≡ₗ κ3) → (⊢ κ2 ≡ₗ κ4) → κ1 ⊑ κ2 ⊣⊢ κ3 ⊑ κ4.
+  Proof.
+    intros H1 H2. iDestruct H1 as "[??]". iDestruct H2 as "[??]".
+    by iSplit; iIntros "#H";
+    (iApply llftl_incl_trans; [|iApply llftl_incl_trans]; [|iApply "H"|]).
+  Qed.
+
+  Lemma lft_incl_equiv_proper_l κ1 κ2 κ3 :
+    (⊢ κ1 ≡ₗ κ3) → κ1 ⊑ κ2 ⊣⊢ κ3 ⊑ κ2.
+  Proof.
+    intros. apply lft_incl_equiv_proper; [done|]. iApply lft_equiv_refl.
+  Qed.
+
+  Lemma lft_incl_equiv_proper_r κ1 κ2 κ3 :
+    (⊢ κ2 ≡ₗ κ3) → κ1 ⊑ κ2 ⊣⊢ κ1 ⊑ κ3.
+  Proof.
+    intros. apply lft_incl_equiv_proper; [|done]. iApply lft_equiv_refl.
+  Qed.
+
+  Lemma lft_intersect_list_submseteq_incl κs κs' : 
+    κs' ⊆+ κs → ⊢ lft_intersect_list κs ⊑ lft_intersect_list κs'.
+  Proof.
+    elim.
+    - exact: lft_incl_refl.
+    - move=>/= *. iApply lft_intersect_mono=>//. iApply lft_incl_refl.
+    - move=>/= κ κ' ?. rewrite !lft_intersect_assoc (lft_intersect_comm κ κ').
+      exact: lft_incl_refl.
+    - move=>/= *. by rewrite -llftl_incl_weaken_lhs_r.
+    - move=>/= *. by iApply llftl_incl_trans.
+  Qed.
+
+  Lemma llftl_tok_unit_equiv :
+      True ⊣⊢ @[ llft_empty ]. 
+  Proof.
+    iSplit. { iIntros "_".  iApply llftl_tok_unit. } iIntros "_". done.
+  Qed.
+  
+  (* original was q.[κ] ={E}=∗ static ⊑ κ, we might need a fractional version *)
+  Lemma lft_eternalize E κ : 
+    (↑NllftG ⊆ E) →
+    @[κ] ={E}=∗ static ⊑ κ.
+  Proof.
+    intros Hmask. iIntros "K". iMod (guards_alloc with "K") as "#g". iModIntro.
+    unfold static. rewrite llftl_tok_unit_equiv.
+    iApply guards_remove_later_rhs. iFrame "g".
+  Qed.
+  
+  Lemma lft_bor_idx1 κ P idx :
+    idx_bor_tok idx ∗ &{κ, idx} P  ⊢ &{κ} P.
+  Proof.
+    iIntros "[A B]".
+    iApply llftl_bor_idx. iExists idx. iFrame.
+  Qed.
+End lifetimes.

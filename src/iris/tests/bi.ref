@@ -1,0 +1,25 @@
+The command has indeed failed with message:
+In environment
+PROP : bi
+m : gmap nat nat
+The term "m" has type "gmap nat nat" while it is expected to have type
+ "gmap nat Z" (cannot unify "nat" and "Z").
+The command has indeed failed with message:
+In environment:
+PROP : bi
+P : PROP
+Could not find an instance for the following existential variables:
+?p : Persistent (|==> P)
+The command has indeed failed with message:
+In environment:
+PROP : bi
+P : PROP
+Could not find an instance for the following existential variables:
+?p : Persistent (■ P)
+"match_def_unfold_fail"
+     : string
+The command has indeed failed with message:
+Cannot infer this placeholder of type "Persistent (match_foo b)" (no type
+class instance found) in environment:
+PROP : bi
+b : bool

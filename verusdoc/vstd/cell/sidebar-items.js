@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["pcell_points"],"mod":["invcell","pcell","pcell_maybe_uninit"],"struct":["CellId","InvCell","PCell","PointsTo","PointsToData"]};

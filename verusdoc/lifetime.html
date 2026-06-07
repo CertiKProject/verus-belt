@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>lifetime</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library lifetime</h1>
+
+<div class="code">
+
+<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Leaf Lifetime Logic. Based loosely on RustBelt's lifetime logic. 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">llft_logicGpreS</span> <span class="id" title="var">Σ</span> := { <span class="id" title="var">llft_logic_inG</span> : <span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> <span class="id" title="var">ltUR</span> ; <span class="id" title="var">exclG</span> : <span class="id" title="var">inG</span> <span class="id" title="var">Σ</span> (<span class="id" title="var">exclR</span> <span class="id" title="var">unitO</span>) }.<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">llft_logicGS</span> <span class="id" title="var">Σ</span> := <span class="id" title="var">LlftLogicG</span> {<br/>
+&nbsp;&nbsp;<span class="id" title="var">llft_inG</span> : <span class="id" title="var">llft_logicGpreS</span> <span class="id" title="var">Σ</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">llft_name</span>: <span class="id" title="var">gname</span>;<br/>
+}.<br/>
+<span class="id" title="keyword">Local Existing Instance</span> <span class="id" title="var">llft_logic_inG</span>.<br/>
+<span class="id" title="keyword">Local Existing Instance</span> <span class="id" title="var">exclG</span>.<br/>
+<span class="id" title="keyword">Local Existing Instance</span> <span class="id" title="var">llft_inG</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_logicΣ</span> : <span class="id" title="var">gFunctors</span> := #[ <span class="id" title="var">GFunctor</span> <span class="id" title="var">ltUR</span> ; <span class="id" title="var">GFunctor</span> (<span class="id" title="var">exclR</span> <span class="id" title="var">unitO</span>) ].<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">subG_lt_logicΣ</span> <span class="id" title="var">Σ</span> : <span class="id" title="var">subG</span> <span class="id" title="var">llft_logicΣ</span> <span class="id" title="var">Σ</span> → <span class="id" title="var">llft_logicGpreS</span> <span class="id" title="var">Σ</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">LlftHelperResources</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">llft_logicGpreS</span> <span class="id" title="var">Σ</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">invGS_gen</span> <span class="id" title="var">hlc</span> <span class="id" title="var">Σ</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">NLLFT</span> := <span class="id" title="var">nroot</span> .@ "leaf-lifetime".<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A Lifetime κ is defined as a <span class="inlinecode"><span class="id" title="var">gset</span></span> <span class="inlinecode"><span class="id" title="var">nat</span></span>. Though this should technically be
+  an implementation detail, this makes it easy to export the basic properties of <span class="inlinecode"><span class="id" title="var">Lifetime</span></span>
+  (EqDecidable, Countable) and <span class="inlinecode">⊓</span> (associativity, commutativity). 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Lifetime</span> := <span class="id" title="var">gset</span> <span class="id" title="var">nat</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">llft_intersect</span> : <span class="id" title="var">Meet</span> <span class="id" title="var">Lifetime</span> := <span class="id" title="var">λ</span> <span class="id" title="var">κ1</span> <span class="id" title="var">κ2</span>, <span class="id" title="var">κ1</span> ∪ <span class="id" title="var">κ2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_empty</span> : <span class="id" title="var">Lifetime</span> := ∅.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Definitions of the lifetime tokens. Note that these aren't fractional since you
+  use Leaf concepts instead. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_alive</span> (<span class="id" title="var">κ</span> : <span class="id" title="var">Lifetime</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_dead</span> (<span class="id" title="var">κ</span> : <span class="id" title="var">Lifetime</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_ctx</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>. <br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;@[ κ ]" := (<span class="id" title="var">llft_alive</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "@[ κ ]") : <span class="id" title="var">bi_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;[† κ ]" := (<span class="id" title="var">llft_dead</span> <span class="id" title="var">κ</span>) (<span class="id" title="var">format</span> "[† κ ]") : <span class="id" title="var">bi_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Lifetime inclusion is, by definition, a guard proposition. This provides us with
+  an analogue of RustBelt's "dynamic lifetime inclusion": to derive new lifetime inclusions
+  we can use Leaf to derive new guard propositions. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">llft_incl</span> (<span class="id" title="var">κ1</span> <span class="id" title="var">κ2</span> : <span class="id" title="var">Lifetime</span>) : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ1</span> ] &amp;&amp;{↑<span class="id" title="var">NLLFT</span>}&amp;&amp;&gt; @[ <span class="id" title="var">κ2</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> &quot;⊑" := <span class="id" title="var">llft_incl</span> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70) : <span class="id" title="var">bi_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The lifetime logic 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">pers_llft_ctx</span> : <span class="id" title="var">Persistent</span> <span class="id" title="var">llft_ctx</span>.<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">pers_llft_dead</span> <span class="id" title="var">κ</span> : <span class="id" title="var">Persistent</span> ([† <span class="id" title="var">κ</span> ]).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">timeless_llft_alive</span> <span class="id" title="var">κ</span> : <span class="id" title="var">Timeless</span> (@[ <span class="id" title="var">κ</span> ]).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">timeless_llft_dead</span> <span class="id" title="var">κ</span> : <span class="id" title="var">Timeless</span> ([† <span class="id" title="var">κ</span> ]).<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">point_prop_llft_alive</span> <span class="id" title="var">κ</span> : <span class="id" title="var">factoring_props.point_prop</span> @[ <span class="id" title="var">κ</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_not_own_end</span> <span class="id" title="var">κ</span> : @[ <span class="id" title="var">κ</span> ] -∗ [† <span class="id" title="var">κ</span> ] -∗ <span class="id" title="var">False</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_not_own_end_and</span> <span class="id" title="var">κ</span> : @[ <span class="id" title="var">κ</span> ] ∧ [† <span class="id" title="var">κ</span> ] ⊢ <span class="id" title="var">False</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_begin</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">llft_ctx</span> ⊢ |={↑<span class="id" title="var">NLLFT</span>}=&gt; ∃ <span class="id" title="var">κ</span>, @[ <span class="id" title="var">κ</span> ] ∗ (@[ <span class="id" title="var">κ</span> ] ={↑<span class="id" title="var">NLLFT</span>}=∗ [† <span class="id" title="var">κ</span> ]).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_borrow_shared</span> <span class="id" title="var">κ</span> (<span class="id" title="var">P</span> : <span class="id" title="var">iProp</span> <span class="id" title="var">Σ</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▷ <span class="id" title="var">P</span> ={↑<span class="id" title="var">NLLFT</span>}=∗ (@[ <span class="id" title="var">κ</span> ] &amp;&amp;{↑<span class="id" title="var">NLLFT</span>}&amp;&amp;&gt; ▷ <span class="id" title="var">P</span>) ∗ ([† <span class="id" title="var">κ</span> ] ={↑<span class="id" title="var">NLLFT</span>}=∗ ▷ <span class="id" title="var">P</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_dead_implies_dead</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢ <span class="id" title="var">llft_ctx</span> -∗ <span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ'</span> -∗ [† <span class="id" title="var">κ'</span> ] ={↑<span class="id" title="var">NLLFT</span>}=∗ [† <span class="id" title="var">κ</span> ].<br/>
+ 
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_intersect</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> : ⊢ (<span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span>) ⊑ <span class="id" title="var">κ</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_incl_glb</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> <span class="id" title="var">κ''</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ'</span> -∗ <span class="id" title="var">κ</span> ⊑ <span class="id" title="var">κ''</span> -∗ <span class="id" title="var">κ</span> ⊑ (<span class="id" title="var">κ'</span> ⊓ <span class="id" title="var">κ''</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_inter_l</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span> ] ⊢ @[ <span class="id" title="var">κ</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_inter_r</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span> ] ⊢ @[ <span class="id" title="var">κ'</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_inter_and</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@[ <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span> ] ⊣⊢ @[ <span class="id" title="var">κ</span> ] ∧ @[ <span class="id" title="var">κ'</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_end_inter</span> <span class="id" title="var">κ</span> <span class="id" title="var">κ'</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[† <span class="id" title="var">κ</span> ⊓ <span class="id" title="var">κ'</span>] ⊣⊢ [† <span class="id" title="var">κ</span> ] ∨ [† <span class="id" title="var">κ'</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_tok_unit</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊢ @[ <span class="id" title="var">llft_empty</span> ].<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llftl_end_unit</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[† <span class="id" title="var">llft_empty</span> ] ⊢ <span class="id" title="var">False</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">LlftLogic</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">llft_alloc</span> {<span class="id" title="var">Σ</span>: <span class="id" title="var">gFunctors</span>} `{!<span class="id" title="var">llft_logicGpreS</span> <span class="id" title="var">Σ</span>} `{!<span class="id" title="var">invGS_gen</span> <span class="id" title="var">hlc</span> <span class="id" title="var">Σ</span>} <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;: ⊢ |={<span class="id" title="var">E</span>}=&gt; ∃ <span class="id" title="var">_</span> : <span class="id" title="var">llft_logicGS</span> <span class="id" title="var">Σ</span>, <span class="id" title="var">llft_ctx</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

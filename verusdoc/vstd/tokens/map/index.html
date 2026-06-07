@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Maps that support ownership of keys"><title>vstd::tokens::map - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="vstd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.93.1 (01f6ddf75 2026-02-11)" data-channel="1.93.1" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-a3946164.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-a410ff4d.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module map</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../vstd/index.html">vstd</a></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module map</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example" title="Example">Example</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="../index.html">In vstd::<wbr>tokens</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">vstd</a>::<wbr><a href="../index.html">tokens</a></div><h1>Module <span>map</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/vstd/tokens/map.rs.html#1-1676">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Maps that support ownership of keys</p>
+<ul>
+<li><a href="struct.GhostMapAuth.html" title="struct vstd::tokens::map::GhostMapAuth"><code>GhostMapAuth&lt;K, V&gt;</code></a> represents authoritative ownership of the entire map;</li>
+<li><a href="struct.GhostSubmap.html" title="struct vstd::tokens::map::GhostSubmap"><code>GhostSubmap&lt;K, V&gt;</code></a> represents client ownership of a submap;</li>
+<li><a href="struct.GhostPersistentSubmap.html" title="struct vstd::tokens::map::GhostPersistentSubmap"><code>GhostPersistentSubmap&lt;K, V&gt;</code></a> represents duplicable client knowledge of a submap which will never change;</li>
+<li><a href="struct.GhostPointsTo.html" title="struct vstd::tokens::map::GhostPointsTo"><code>GhostPointsTo&lt;K, V&gt;</code></a> represents client ownership of a single key-value pair.</li>
+<li><a href="struct.GhostPersistentPointsTo.html" title="struct vstd::tokens::map::GhostPersistentPointsTo"><code>GhostPersistentPointsTo&lt;K, V&gt;</code></a> represents duplicable client knowledge of a single key-value pair which will never change.</li>
+</ul>
+<p>Updating the authoritative <code>GhostMapAuth&lt;K, V&gt;</code> requires a <code>GhostSubmap&lt;K, V&gt;</code> containing the keys being updated.</p>
+<p><code>GhostSubmap&lt;K, V&gt;</code>s can be combined or split.
+Whenever a <code>GhostSubmap&lt;K, V&gt;</code> can be used, we can instead use a <code>GhostPointsTo&lt;K, V&gt;</code> (but not vice-versa).</p>
+<p><code>GhostPersistentSubmap&lt;K, V&gt;</code>s can be combined or split.
+Whenever a <code>GhostPersistentSubmap&lt;K, V&gt;</code> can be used, we can instead use a <code>GhostPersistentPointsTo&lt;K, V&gt;</code> (but not vice-versa).</p>
+<h4 id="example"><a class="doc-anchor" href="#example">§</a>Example</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>example_use() {
+    <span class="kw">let </span>tracked (<span class="kw-2">mut </span>auth, <span class="kw-2">mut </span>sub) = GhostMapAuth::new(<span class="macro">map!</span>[<span class="number">1u8 </span>=&gt; <span class="number">1u64</span>, <span class="number">2u8 </span>=&gt; <span class="number">2u64</span>, <span class="number">3u8 </span>=&gt; <span class="number">3u64</span>]);
+
+    <span class="comment">// Allocate some more keys in the auth map, receiving a new submap.
+    </span><span class="kw">let </span>tracked sub2 = auth.insert_map(<span class="macro">map!</span>[<span class="number">4u8 </span>=&gt; <span class="number">4u64</span>, <span class="number">5u8 </span>=&gt; <span class="number">5u64</span>]);
+    proof { sub.combine(sub2); }
+
+    <span class="comment">// Allocate a single key in the auth map, receiving a points to
+    </span><span class="kw">let </span>tracked pt1 = auth.insert(<span class="number">6u8</span>, <span class="number">6u64</span>);
+    proof { sub.combine_points_to(pt1); }
+
+    <span class="comment">// Delete some keys in the auth map, by returning corresponding submap.
+    </span><span class="kw">let </span>tracked sub3 = sub.split(<span class="macro">set!</span>[<span class="number">3u8</span>, <span class="number">4u8</span>]);
+    proof { auth.delete(sub3); }
+
+    <span class="comment">// Split the submap into a points to and a submap
+    </span><span class="kw">let </span>tracked pt2 = sub.split_points_to(<span class="number">1u8</span>);
+    <span class="kw">let </span>tracked sub4 = sub.split(<span class="macro">set!</span>[<span class="number">5u8</span>, <span class="number">6u8</span>]);
+
+    <span class="comment">// In general, we might need to call agree() to establish the fact that
+    // a points-to/submap has the same values as the auth map.  Here, Verus
+    // doesn't need agree because it can track where both the auth, points-to
+    // and submap came from.
+    </span>proof { sub.agree(<span class="kw-2">&amp;</span>auth); }
+    proof { pt2.agree(<span class="kw-2">&amp;</span>auth); }
+    proof { sub4.agree(<span class="kw-2">&amp;</span>auth); }
+
+    assert(pt2.key() == <span class="number">1u8</span>);
+    assert(pt2.value() == auth[<span class="number">1u8</span>]);
+    assert(sub4[<span class="number">5u8</span>] == auth[<span class="number">5u8</span>]);
+    assert(sub4[<span class="number">6u8</span>] == auth[<span class="number">6u8</span>]);
+    assert(sub[<span class="number">2u8</span>] == auth[<span class="number">2u8</span>]);
+
+    <span class="comment">// Update keys using ownership of submaps.
+    </span>proof { sub.update(<span class="kw-2">&amp;mut </span>auth, <span class="macro">map!</span>[<span class="number">2u8 </span>=&gt; <span class="number">22u64</span>]); }
+    proof { pt2.update(<span class="kw-2">&amp;mut </span>auth, <span class="number">11u64</span>); }
+    proof { sub4.update(<span class="kw-2">&amp;mut </span>auth, <span class="macro">map!</span>[<span class="number">5u8 </span>=&gt; <span class="number">55u64</span>, <span class="number">6u8 </span>=&gt; <span class="number">66u8</span>]); }
+    assert(auth[<span class="number">1u8</span>] == <span class="number">11u64</span>);
+    assert(auth[<span class="number">2u8</span>] == <span class="number">22u64</span>);
+    assert(auth[<span class="number">5u8</span>] == <span class="number">55u64</span>);
+    assert(auth[<span class="number">6u8</span>] == <span class="number">66u64</span>);
+
+    <span class="comment">// Persist and duplicate the submap
+    </span><span class="kw">let </span><span class="kw-2">mut </span>psub1 = sub.persist();
+    assert(psub1[<span class="number">2u8</span>] == <span class="number">22u64</span>);
+    <span class="kw">let </span>psub2 = psub1.duplicate();
+    assert(psub2[<span class="number">2u8</span>] == <span class="number">22u64</span>);
+
+    <span class="comment">// Not shown in this simple example is the main use case of this resource:
+    // maintaining an invariant between GhostMapAuth&lt;K, V&gt; and some exec-mode
+    // shared state with a map view (e.g., HashMap&lt;K, V&gt;), which states that
+    // the Map&lt;K, V&gt; view of GhostMapAuth&lt;K, V&gt; is the same as the view of the
+    // HashMap&lt;K, V&gt;, and then handing out a GhostSubmap&lt;K, V&gt; to different
+    // clients that might need to operate on different keys in this map.
+</span>}</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.GhostMapAuth.html" title="struct vstd::tokens::map::GhostMapAuth">Ghost<wbr>MapAuth</a></dt><dd>A resource that has the authoritative ownership on the entire map</dd><dt><a class="struct" href="struct.GhostPersistentPointsTo.html" title="struct vstd::tokens::map::GhostPersistentPointsTo">Ghost<wbr>Persistent<wbr>Points<wbr>To</a></dt><dd>A resource representing duplicable client knowledge of a single key in the map.</dd><dt><a class="struct" href="struct.GhostPersistentSubmap.html" title="struct vstd::tokens::map::GhostPersistentSubmap">Ghost<wbr>Persistent<wbr>Submap</a></dt><dd>A resource representing duplicable client knowledge of a persistent submap.</dd><dt><a class="struct" href="struct.GhostPointsTo.html" title="struct vstd::tokens::map::GhostPointsTo">Ghost<wbr>Points<wbr>To</a></dt><dd>A resource that asserts client ownership over a single key in the map.</dd><dt><a class="struct" href="struct.GhostSubmap.html" title="struct vstd::tokens::map::GhostSubmap">Ghost<wbr>Submap</a></dt><dd>A resource that asserts client ownership of a submap.</dd></dl></section></div></main></body></html>

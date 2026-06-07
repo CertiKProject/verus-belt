@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Automatically compiles spec items to exec items, with proofs of functional correctness."><title>exec_spec_verified in vstd::contrib::exec_spec - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="vstd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.93.1 (01f6ddf75 2026-02-11)" data-channel="1.93.1" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-a3946164.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-a410ff4d.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">exec_spec_verified</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../vstd/index.html">vstd</a></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In vstd::<wbr>contrib::<wbr>exec_<wbr>spec</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">vstd</a>::<wbr><a href="../index.html">contrib</a>::<wbr><a href="index.html">exec_spec</a></div><h1>Macro <span class="macro">exec_<wbr>spec_<wbr>verified</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><pre class="rust item-decl"><code>exec_spec_verified!() { <span class="comment">/* proc-macro */</span> }</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Automatically compiles spec items to exec items, with proofs of functional correctness.</p>
+<p>This macro takes a list of spec items, and generates a corresponding list of exec items:</p>
+<ul>
+<li>For every struct/enum <code>A</code>, we generate <code>ExecA</code>, which implements <code>DeepView&lt;V = A&gt;</code></li>
+<li>For every spec function <code>spec fn f(T) -&gt; U</code>, we generate
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>exec_f(a: exec(T)) -&gt; (r: exec(U))
+ensures r.deep_view() == f(a.deep_view()) { ... }</code></pre></div>where <code>exec(T)</code> maps a subset of supported spec types to exec types, including
+<code>Seq</code> (translated to <code>Vec</code>) and <code>Option</code>.</li>
+</ul>
+<p>Below is a non-exhaustive list of supported spec expressions. Items marked with a * utilize unverified translations from spec to exec code internally.</p>
+<ul>
+<li>Basic arithmetic operations</li>
+<li>Logical operators (&amp;&amp;, ||, &amp;&amp;&amp;, |||, not, ==&gt;)</li>
+<li>If, match and “matches”</li>
+<li>Field expressions</li>
+<li>Bounded quantifiers of the form <code>forall |i: &lt;type&gt;| &lt;lower&gt; &lt;op&gt; i &lt;op&gt; &lt;upper&gt; ==&gt; &lt;expr&gt;</code> and <code>exists |i: &lt;type&gt;| &lt;lower&gt; &lt;op&gt; i &lt;op&gt; &lt;upper&gt; &amp;&amp; &lt;expr&gt;</code>, where:
+<ul>
+<li><code>&lt;op&gt;</code> is either <code>&lt;=</code> or <code>&lt;</code></li>
+<li><code>&lt;type&gt;</code> is a Rust primitive integer (<code>i&lt;N&gt;</code>, <code>isize</code>, <code>u&lt;N&gt;</code>, <code>usize</code>)</li>
+</ul>
+</li>
+<li><code>SpecString</code> (an alias to <code>Seq&lt;char&gt;</code> to syntactically indicate that we want <code>String</code>/<code>&amp;str</code>), equality*, indexing, len, string literals</li>
+<li><code>Option&lt;T&gt;</code> with these functions:
+<ul>
+<li>equality, <code>unwrap</code></li>
+</ul>
+</li>
+<li><code>Seq&lt;T&gt;</code> (compiled to <code>Vec&lt;T&gt;</code> or <code>&amp;[T]</code> depending on the context), <code>seq!</code> literals, and these <code>Seq</code> functions:
+<ul>
+<li>equality*, <code>len</code>, indexing, <code>subrange</code>*, <code>add</code>*, <code>push</code>*, <code>update</code>*, <code>empty</code>, <code>to_multiset</code>*, <code>drop_first</code>*, <code>drop_last</code>*, <code>take</code>*, <code>skip</code>*, <code>first</code>, <code>last</code>, <code>is_suffix_of</code>*, <code>is_prefix_of</code>*, <code>contains</code>*, <code>index_of</code>*, <code>index_of_first</code>*, <code>index_of_last</code>*</li>
+</ul>
+</li>
+<li><code>Map&lt;K, V&gt;</code> (compiled to <code>HashMap&lt;K, V&gt;</code>), and these <code>Map</code> functions:
+<ul>
+<li>equality*, <code>len</code>*, indexing*, <code>empty</code>, <code>dom</code>*, <code>insert</code>*, <code>remove</code>*, <code>get</code>*</li>
+<li>Note: indexing is only supported on <code>Map&lt;K, V&gt;</code> where <code>K</code> is a primitive type (e.g. <code>usize</code>); for other types <code>K</code>, use <code>get</code> instead.</li>
+</ul>
+</li>
+<li><code>Set&lt;T&gt;</code> (compiled to <code>HashSet&lt;T&gt;</code>), and these <code>Set</code> functions:
+<ul>
+<li>equality*, <code>len</code>*, <code>empty</code>, <code>contains</code>*, <code>insert</code>*, <code>remove</code>*, <code>union</code>*, <code>intersect</code>*, <code>difference</code>*</li>
+</ul>
+</li>
+<li><code>Multiset&lt;T&gt;</code> (compiled to <code>ExecMultiset&lt;T&gt;</code>, a type implemented in <code>vstd::contrib::exec_spec</code> whose internal representation is a <code>HashMap</code>), and these <code>Multiset</code> functions:
+<ul>
+<li>equality*, <code>len</code>*, <code>count</code>*, <code>empty</code>*, <code>singleton</code>*, <code>add</code>*, <code>sub</code>*</li>
+</ul>
+</li>
+<li>User-defined structs and enums. These types should be defined within the macro using spec-compatible types for the fields (e.g. <code>Seq</code>). Such types are then compiled to their <code>Exec-</code> versions, which use the exec versions of each field’s type (e.g. <code>Vec</code>/slice).</li>
+<li>Primitive integer/boolean types (<code>i&lt;N&gt;</code>, <code>isize</code>, <code>u&lt;N&gt;</code>, <code>usize</code>, <code>char</code>, etc.). Note that <code>int</code> and <code>nat</code> cannot be used in <code>exec_spec_verified!</code>.</li>
+</ul>
+</div></details></section></div></main></body></html>
