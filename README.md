@@ -371,9 +371,11 @@ Remarks:
    most other specifications. These operations are special-cased in Verus's VC gen.
  * The `typed_local_inv_open` and `typed_local_inv_close` specs modify something called the
    `InvCtx` to keep track of what invariants are open (within the current function).
-   This is necessary to fix the soundness hole documented in Sec. 4. This concept does not
-   exist in Verus, where the soundness hole remains open.
- * `LocalInvariant::into_inner` has a precondition on the mask (given by the `opens_invariants` clause). VerusBelt shows this precondition is not necessary (when using the invariant context strategy).
+   This is necessary to fix the soundness hole documented in Sec. 4. ~~This concept does not
+   exist in Verus, where the soundness hole remains open.~~
+     * This is now fixed, see https://github.com/verus-lang/verus/pull/2476 and https://github.com/verus-lang/verus/pull/2501
+ * ~~`LocalInvariant::into_inner` has a precondition on the mask (given by the `opens_invariants` clause). VerusBelt shows this precondition is not necessary (when using the invariant context strategy).~~
+     * This precondition was removed in https://github.com/verus-lang/verus/pull/2533 
 
 ### AtomicInvariant
 
