@@ -319,6 +319,11 @@ src/lambda_verus/typing/soundness.v
 src/lambda_verus/typing/examples/assert.v
 src/lambda_verus/typing/examples/list.v
 src/lambda_verus/typing/examples/pcell_example.v
+src/lambda_verus/typing/examples/cast_toy.v
+src/lambda_verus/typing/examples/dyn_obj.v
+# NOTE: dyn_call.v ends 4 lemmas with `Admitted`, so building it adds axioms.
+# dyn_obj.v is axiom-free and does not depend on it.
+src/lambda_verus/typing/examples/dyn_call.v
 
 
 -arg -w -arg -argument-scope-delimiter
